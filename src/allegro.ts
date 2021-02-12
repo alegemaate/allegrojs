@@ -73,10 +73,15 @@ type AllegroBitmap = {
 /// @param name font-family name
 /// @param type object type, "fnt" in this case
 type AllegroFont = {
-  element: HTMLStyleElement;
+  element: HTMLStyleElement | null;
   file: string;
   name: string;
   type: "fnt";
+};
+
+type AllegroTimer = {
+  timer: () => void;
+  id: number;
 };
 
 //@}
@@ -111,7 +116,7 @@ function allegro_init_all(
   w: number,
   h: number,
   menu: boolean,
-  enable_keys: boolean
+  enable_keys: number[]
 ) {
   install_allegro();
   set_gfx_mode(id, w, h);
@@ -122,7 +127,7 @@ function allegro_init_all(
 
 /// Macro to be placed after the end of main()
 /// Calls main()
-function END_OF_MAIN() {
+function END_OF_MAIN(main: () => void) {
   window.addEventListener("load", main);
 }
 
@@ -338,7 +343,10 @@ function remove_touch() {
   log("Touch removed!");
 }
 
-function _get_touch(id: number) {
+function _get_touch(id?: number) {
+  if (typeof id !== "number") {
+    return null;
+  }
   return touch.find((t) => t.id === id) ?? null;
 }
 
@@ -346,7 +354,7 @@ function _touchstart(e: TouchEvent) {
   if (!e.target) {
     return;
   }
-  var rect = e.target.getBoundingClientRect();
+  var rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
   for (var c = 0; c < e.changedTouches.length; c++) {
     var point = e.changedTouches.item(c);
 
@@ -371,10 +379,10 @@ function _touchstart(e: TouchEvent) {
   e.preventDefault();
 }
 
-function _touchend(e) {
+function _touchend(e: TouchEvent) {
   for (var c = 0; c < e.changedTouches.length; c++) {
     var point = e.changedTouches.item(c);
-    var t = _get_touch(point.identifier);
+    var t = _get_touch(point?.identifier);
     if (t) {
       touch.splice(touch.indexOf(t), 1);
       touch_released.push(t);
@@ -384,12 +392,15 @@ function _touchend(e) {
   e.preventDefault();
 }
 
-function _touchmove(e) {
-  var rect = e.target.getBoundingClientRect();
+function _touchmove(e: TouchEvent) {
+  if (!e.target) {
+    return;
+  }
+  var rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
   for (var c = 0; c < e.changedTouches.length; c++) {
     var point = e.changedTouches.item(c);
-    var t = _get_touch(point.identifier);
-    if (t) {
+    var t = _get_touch(point?.identifier);
+    if (t && point) {
       var x = point.clientX - rect.left;
       var y = point.clientY - rect.top;
       t.mx += t.x - x;
@@ -407,17 +418,14 @@ function _touchmove(e) {
 //@{
 
 /// All downloadable objects
-var _downloadables = [];
+var _downloadables: (AllegroBitmap | AllegroSample)[] = [];
 
 /// holds all currently installed timers
-var _installed_timers = [];
+var _installed_timers: AllegroTimer[] = [];
 
 /// looks up a timer by it's function on the list
-function _timer_lookup(proc) {
-  for (var c = 0; c < _installed_timers.length; c++) {
-    if (_installed_timers[c].timer == proc) return _installed_timers[c];
-  }
-  return -1;
+function _timer_lookup(proc: () => void) {
+  return _installed_timers.find((t) => (t.timer = proc)) ?? -1;
 }
 
 /// Converts seconds to install_int_ex interval units
@@ -430,7 +438,7 @@ function SECS_TO_TIMER(secs: number) {
 /// Converts milliseconds to install_int_ex interval units
 /// @param msec number of milliseconds
 /// @return value converted to milliseconds
-function MSEC_TO_TIMER(msec) {
+function MSEC_TO_TIMER(msec: number) {
   return msec;
 }
 
@@ -461,7 +469,7 @@ function time() {
 /// Installs a user timer handler, with the speed given as the number of milliseconds between ticks. This is the same thing as install_int_ex(proc, MSEC_TO_TIMER(speed)). Calling again this routine with the same timer handler as parameter allows you to adjust its speed.
 /// @param procedure function to be called
 /// @param speed execution interval in msec
-function install_int(procedure, msec) {
+function install_int(procedure: () => void, msec: number) {
   return install_int_ex(procedure, MSEC_TO_TIMER(msec));
 }
 
@@ -473,14 +481,14 @@ function install_int(procedure, msec) {
 /// * BPM_TO_TIMER(bpm) - beats per minute
 /// @param procedure function to be called
 /// @param speed execution interval
-function install_int_ex(procedure, speed: number) {
+function install_int_ex(procedure: () => void, speed: number) {
   var timer_id = window.setInterval(procedure, speed);
   _installed_timers.push({ timer: procedure, id: timer_id });
   log("Added insterrupt #" + timer_id + " at " + speed + "msec isntervals!");
 }
 
 /// registered loop procedure
-var _loopproc;
+var _loopproc = () => {};
 
 /// Performs some loop tasks, such as cleaning up pressed[] and released[]
 function _uberloop() {
@@ -500,7 +508,7 @@ function _uberloop() {
     mouse_pressed = 0;
     mouse_released = 0;
     mouse_mx = 0;
-    mosue_my = 0;
+    mouse_my = 0;
     mouse_mz = 0;
     _last_mouse_x = mouse_x;
     _last_mouse_y = mouse_y;
@@ -509,13 +517,13 @@ function _uberloop() {
   if (_touch_installed) {
     touch_released = [];
     touch_pressed = [];
-    for (var c = 0; c < touch.length; c++) {
-      touch[c].mx = 0;
-      touch[c].my = 0;
-      touch[c].px = touch[c].x;
-      touch[c].py = touch[c].y;
-      touch[c].age++;
-    }
+    touch.forEach((t) => {
+      t.mx = 0;
+      t.my = 0;
+      t.px = t.x;
+      t.py = t.y;
+      t.age++;
+    });
   }
 }
 
@@ -523,7 +531,7 @@ function _uberloop() {
 /// Loop is the same as interrupt, except, it cannot be stopped once it's started. It's meant for game loop. remove_int() and remove_all_ints() have no effect on this. Since JS can't have blocking (continuously executing) code and realise on events and timers, you cannot have your game loop inside a while or for argument. Instead, you should use this to create your game loop to be called at given interval. There should only be one loop() function! Note that mouse mickeys (mouse_mx, etc.), and pressed indicators (pressed[] and mouse_pressed) will only work inside loop()
 /// @param procedure function to be looped, preferably inline, but let's not talk coding styles here
 /// @param speed speed in the same format as install_int_ex()
-function loop(procedure, speed) {
+function loop(procedure: () => void, speed: number) {
   _loopproc = procedure;
   var timer_id = window.setInterval(_uberloop, speed);
   log("Game loop initialised!");
@@ -531,30 +539,28 @@ function loop(procedure, speed) {
 }
 
 /// time when ready() was called
-var _loader_init_time;
+var _loader_init_time: number;
 
 /// Holds the download complete handler function
-var _ready_proc;
+var _ready_proc: () => void | undefined;
 
 /// Holds the download complete handler function
-var _bar_proc;
+var _bar_proc: (progress: number) => void | undefined;
 
 /// checks if everything has downloaded in intervals
 function _progress_check() {
   var num_assets = 0;
   var num_loaded = 0;
-  for (var c = 0; c < _downloadables.length; c++) {
+  _downloadables.forEach((down) => {
     num_assets++;
-    if (_downloadables[c].type == "snd") {
-      if (
-        _downloadables[c].element.readyState >=
-        _downloadables[c].element.HAVE_FUTURE_DATA
-      )
-        _downloadables[c].ready = true;
+    if (down.type == "snd") {
+      if (down.element.readyState >= down.element.HAVE_FUTURE_DATA) {
+        down.ready = true;
+      }
     }
-    if (_downloadables[c].ready) num_loaded++;
-  }
-  if (_bar_proc) _bar_proc(num_assets / num_loaded);
+    if (down.ready) num_loaded++;
+  });
+  _bar_proc?.(num_assets / num_loaded);
   if (num_loaded < num_assets) {
     window.setTimeout(_progress_check, 100);
   } else {
@@ -563,14 +569,18 @@ function _progress_check() {
         ((time() - _loader_init_time) / 1000).toFixed(1) +
         " seconds!"
     );
-    _ready_proc();
+    _ready_proc?.();
   }
 }
 
 /// Default loading bar rendering
 /// This function is used by ready() to display a simple loading bar on screen. You need to manually specify a dummy function if you don't want loading screen.
 /// @param progress loading progress in 0.0 - 1.0 range
-function loading_bar(progress) {
+function loading_bar(progress: number) {
+  if (!canvas) {
+    return;
+  }
+
   rectfill(canvas, 5, SCREEN_H - 55, SCREEN_W - 10, 50, makecol(0, 0, 0));
   rectfill(
     canvas,
@@ -595,7 +605,7 @@ function loading_bar(progress) {
 /// You should always wrap your loop() function around it, unless there is nothing external you need. load_bitmap() and load_sample() all require some time to process and the execution cannot be stalled for that, so all code you wrap in this hander will only get executed after everything has loaded making sure you can access bitmap properties and data and play samples right away.  Note that load_font() does not affect ready(), so you should always load your fonts first.
 /// @param procedure function to be called when everything has loaded.
 /// @param bar loading bar callback function, if omitted, equals to loading_bar() and renders a simple loading bar. it must accept one parameter, that is loading progress in 0.0-1.0 range.
-function ready(procedure, bar) {
+function ready(procedure: () => void, bar: () => void) {
   _loader_init_time = time();
   _ready_proc = procedure;
   log("Loader initialised!");
@@ -606,22 +616,22 @@ function ready(procedure, bar) {
 
 /// Removes interrupt
 /// @param procedure interrupt procedure to be removed
-function remove_int(procedure) {
-  for (var c = 0; c < _installed_timers.length; c++) {
-    if (_installed_timers[c].timer == _installed_timers) {
-      log("Removing interrupt " + _installed_timers[c].id + "!");
-      window.clearInterval(_installed_timers[c].id);
-      _installed_timers.splice(c, 1);
+function remove_int(procedure: () => void) {
+  _installed_timers.forEach((timer, index) => {
+    if (timer.timer == procedure) {
+      log("Removing interrupt " + timer.id + "!");
+      window.clearInterval(timer.id);
+      _installed_timers.splice(index, 1);
       return;
     }
-  }
+  });
 }
 
 /// Removes all interrupts
 function remove_all_ints() {
-  for (var c = 0; c < _installed_timers.length; c++) {
-    window.clearInterval(_installed_timers[c].id);
-  }
+  _installed_timers.forEach((timer) => {
+    window.clearInterval(timer.id);
+  });
   _installed_timers = [];
   log("Removed all interrupts!");
 }
@@ -748,15 +758,15 @@ var KEY_A = 0x41,
 /// *     KEY_PRTSCR, KEY_PAUSE,
 /// *     KEY_LSHIFT, KEY_RSHIFT, KEY_LCONTROL, KEY_RCONTROL, KEY_ALT, KEY_ALTGR, KEY_LWIN, KEY_RWIN, KEY_MENU, KEY_SCRLOCK, KEY_NUMLOCK, KEY_CAPSLOCK
 /// *     KEY_EQUALS_PAD, KEY_BACKQUOTE, KEY_SEMICOLON, KEY_COMMAND
-var key = [];
+var key: boolean[] = [];
 
 /// Array of flags indicating in a key was just pressed since last loop()
 /// Note that this will only work inside loop()
-var pressed = [];
+var pressed: boolean[] = [];
 
 /// Array of flags indicating in a key was just released since last loop()
 /// Note that this will only work inside loop()
-var released = [];
+var released: boolean[] = [];
 
 /// Is keyboard even installed
 var _keyboard_installed = false;
@@ -778,12 +788,12 @@ var _default_enabled_keys = [
 ];
 
 /// array of prevent default avoiders
-var _enabled_keys = [];
+var _enabled_keys: number[] = [];
 
 /// Installs keyboard handlers
 /// Unlike mouse, keyboard can be installed before initialising graphics, and the handlers will function over the entire website, as opposed to canvas only. After this call, the key[] array can be used to check state of each key. All keys will have their default action disabled, unless specified in the enable_keys array. This means that i.e. backspace won't go back, arrows won't scroll. By default, function keys  (KEY_F1..KEY_F12) are the only ones not suppressed
 /// @param enable_keys array of keys that are not going to have their default action prevented, i.e. [KEY_F5] will enable reloading the website. By default, if this is omitted, function keys are the only ones on the list.
-function install_keyboard(enable_keys) {
+function install_keyboard(enable_keys?: number[]) {
   if (_keyboard_installed) {
     _allog("Keyboard already installed");
     return -1;
@@ -819,14 +829,14 @@ function remove_keyboard() {
 }
 
 /// key down event handler
-function _keydown(e) {
+function _keydown(e: KeyboardEvent) {
   if (!key[e.keyCode]) pressed[e.keyCode] = true;
   key[e.keyCode] = true;
   if (_enabled_keys.indexOf(e.keyCode) == -1) e.preventDefault();
 }
 
 /// key up event handler
-function _keyup(e) {
+function _keyup(e: KeyboardEvent) {
   key[e.keyCode] = false;
   released[e.keyCode] = true;
   if (_enabled_keys.indexOf(e.keyCode) == -1) e.preventDefault();
@@ -854,6 +864,11 @@ function create_bitmap(width: number, height: number): AllegroBitmap {
   cv.width = width;
   cv.height = height;
   var ctx = cv.getContext("2d");
+
+  if (!ctx) {
+    throw new Error("Could not get context");
+  }
+
   return {
     w: width,
     h: height,
@@ -868,14 +883,19 @@ function create_bitmap(width: number, height: number): AllegroBitmap {
 /// Loads image from file asynchronously. This means that the execution won't stall for the image, and it's data won't be accessible right off the start. You can check for bitmap object's 'ready' member to see if it has loaded, but you probably should avoid stalling execution for that, as JS doesn't really like that.
 /// @param filename URL of image
 /// @return bitmap object, or -1 on error
-function load_bitmap(filename) {
+function load_bitmap(filename: string) {
   log("Loading bitmap " + filename + "...");
   var img = new Image();
   img.src = filename;
   var now = time();
   var cv = document.createElement("canvas");
   var ctx = cv.getContext("2d");
-  var bmp = {
+
+  if (!ctx) {
+    throw new Error("Context not defined");
+  }
+
+  var bmp: AllegroBitmap = {
     canvas: cv,
     context: ctx,
     w: -1,
@@ -883,6 +903,7 @@ function load_bitmap(filename) {
     ready: false,
     type: "bmp",
   };
+
   _downloadables.push(bmp);
   img.onload = function () {
     log(
@@ -921,7 +942,12 @@ function load_sheet(filename: string, w: number, h: number) {
   var now = time();
   var cv = document.createElement("canvas");
   var ctx = cv.getContext("2d");
-  var bmp = {
+
+  if (!ctx) {
+    throw new Error("Context not defined");
+  }
+
+  var bmp: AllegroBitmap = {
     canvas: cv,
     context: ctx,
     w: -1,
@@ -929,8 +955,11 @@ function load_sheet(filename: string, w: number, h: number) {
     ready: false,
     type: "bmp",
   };
+
   var sheet: AllegroBitmap[] = [];
+
   _downloadables.push(bmp);
+
   img.onload = function () {
     log(
       "Sheet " +
@@ -953,12 +982,12 @@ function load_sheet(filename: string, w: number, h: number) {
 
     for (var y = 0; y < ny; y++) {
       for (var x = 0; x < nx; x++) {
-        var frame = create_bitmap(w, h);
+        const frame = create_bitmap(w, h);
         blit(bmp, frame, x * w, y * h, 0, 0, w, h);
         sheet.push(frame);
       }
     }
-    log("Created " + frame.length + " frames, each is " + w + "x" + h + "!");
+    log("Created " + sheet.length + " frames, each is " + w + "x" + h + "!");
   };
   return sheet;
 }
@@ -1011,9 +1040,11 @@ function set_gfx_mode(
 
   var ctx = cv.getContext("2d");
 
+  if (!ctx) {
+    throw new Error("Context not defined");
+  }
+
   // turn off image aliasing
-  ctx.mozImageSmoothingEnabled = smooth;
-  ctx.webkitImageSmoothingEnabled = smooth;
   ctx.imageSmoothingEnabled = smooth;
 
   SCREEN_W = width;
@@ -1062,7 +1093,7 @@ function DEG(r: number) {
 }
 
 /// Helper for setting fill style
-function _fillstyle(bitmap: AllegroBitmap, colour: number) {
+function _fillstyle(bitmap: AllegroBitmap | AllegroCanvas, colour: number) {
   bitmap.context.fillStyle =
     "rgba(" +
     getr(colour) +
@@ -1098,7 +1129,7 @@ function _strokestyle(bitmap: AllegroBitmap, colour: number, width: number) {
 /// @param b blue  component in 0-255 range
 /// @param a alpha component in 0-255 range, defaults to 255 (fully opaque)
 /// @return colour in 0xAARRGGBB format
-function makecol(r: number, g: number, b: number, a: number) {
+function makecol(r: number, g: number, b: number, a: number = 255) {
   a = typeof a !== "undefined" ? a : 255;
   return (a << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
 }
@@ -1183,11 +1214,12 @@ function getaf(colour: number) {
 /// @return colour in 0xAARRGGBB format
 function getpixel(bitmap: AllegroBitmap, x: number, y: number) {
   var data = bitmap.context.getImageData(x, y, 1, 1).data;
+
   return (
-    (data[3] << 24) |
-    ((data[0] & 0xff) << 16) |
-    ((data[1] & 0xff) << 8) |
-    (data[2] & 0xff)
+    ((data[3] ?? 0) << 24) |
+    (((data[0] ?? 0) & 0xff) << 16) |
+    (((data[1] ?? 0) & 0xff) << 8) |
+    ((data[2] ?? 0) & 0xff)
   );
 }
 
@@ -1345,16 +1377,16 @@ function trianglefill(
 /// @param width line width
 function polygon(
   bitmap: AllegroBitmap,
-  vertices: string,
-  points: string[],
+  vertices: number,
+  points: number[],
   colour: number,
   width: number
 ) {
   _strokestyle(bitmap, colour, width);
   bitmap.context.beginPath();
   for (var c = 0; c < vertices; c++) {
-    if (c) bitmap.context.lineTo(points[c * 2], points[c * 2 + 1]);
-    else bitmap.context.moveTo(points[c * 2], points[c * 2 + 1]);
+    if (c) bitmap.context.lineTo(points[c * 2] ?? 0, points[c * 2 + 1] ?? 0);
+    else bitmap.context.moveTo(points[c * 2] ?? 0, points[c * 2 + 1] ?? 0);
   }
   bitmap.context.closePath();
   bitmap.context.stroke();
@@ -1368,15 +1400,15 @@ function polygon(
 /// @param colour colour in 0xAARRGGBB format
 function polygonfill(
   bitmap: AllegroBitmap,
-  vertices: string,
-  points: string[],
+  vertices: number,
+  points: number[],
   colour: number
 ) {
   _fillstyle(bitmap, colour);
   bitmap.context.beginPath();
   for (var c = 0; c < vertices; c++) {
-    if (c) bitmap.context.lineTo(points[c * 2], points[c * 2 + 1]);
-    else bitmap.context.moveTo(points[c * 2], points[c * 2 + 1]);
+    if (c) bitmap.context.lineTo(points[c * 2] ?? 0, points[c * 2 + 1] ?? 0);
+    else bitmap.context.moveTo(points[c * 2] ?? 0, points[c * 2 + 1] ?? 0);
   }
   bitmap.context.closePath();
   bitmap.context.fill();
@@ -1409,7 +1441,7 @@ function rect(
 /// @param w,h width and height
 /// @param colour colour in 0xAARRGGBB format
 function rectfill(
-  bitmap: AllegroBitmap,
+  bitmap: AllegroBitmap | AllegroCanvas,
   x1: number,
   y1: number,
   w: number,
@@ -1431,7 +1463,7 @@ function circle(
   bitmap: AllegroBitmap,
   x: number,
   y: number,
-  radius: string,
+  radius: number,
   colour: number,
   width: number
 ) {
@@ -1448,10 +1480,10 @@ function circle(
 /// @param r circle radius
 /// @param colour colour in 0xAARRGGBB format
 function circlefill(
-  bitmap: AllegroBitmap,
+  bitmap: AllegroBitmap | AllegroCanvas,
   x: number,
   y: number,
-  radius: string,
+  radius: number,
   colour: number
 ) {
   _fillstyle(bitmap, colour);
@@ -1496,7 +1528,7 @@ function arc(
 /// @param r radius
 /// @param colour colour in 0xAARRGGBB format
 function arcfill(
-  bitmap: AllegroBitmap,
+  bitmap: AllegroBitmap | AllegroCanvas,
   x: number,
   y: number,
   ang1: number,
@@ -1825,7 +1857,7 @@ function load_font(filename: string) {
 /// This creates a font element using an existing font-family name.
 /// @param family font-family property, can be 'serif', 'sans-serif' or anything else that works
 /// @return font object
-function create_font(family) {
+function create_font(family: string): AllegroFont {
   return { element: null, file: "", name: family, type: "fnt" };
 }
 
@@ -1939,9 +1971,9 @@ function install_sound() {}
 /// Sets global volume
 function set_volume(volume: number) {
   _volume = volume;
-  for (var c = 0; c < _samples.length; c++) {
-    _samples[c].element.volume = _samples[c].volume * _volume;
-  }
+  _samples.forEach(
+    (sample) => (sample.element.volume = sample.volume * _volume)
+  );
 }
 
 /// Gets global volume
@@ -2034,6 +2066,13 @@ function pause_sample(sample: AllegroSample) {
 /// @name HELPER MATH FUNCTIONS
 //@{
 
+/// Returns the floored number of float input
+/// Result is always integer.
+/// @return floored integer
+function floor(num: number) {
+  return Math.floor(num);
+}
+
 /// Returns a random number from 0 to 65535
 /// Result is always integer. Use modulo (%) operator to create smaller values i.e. rand()%256 will return a random number from 0 to 255 inclusive.
 /// @return a random number in 0-65535 inclusive range
@@ -2066,7 +2105,7 @@ function abs(a: number) {
 /// Returns length of a vector
 /// @param x,y vector coordinates
 /// @return length of the vector
-function length(x: number, y: number) {
+function length_(x: number, y: number) {
   return Math.sqrt(x * x + y * y);
 }
 
@@ -2117,7 +2156,7 @@ function linedist(
 /// @param to number to lerp to
 /// @param progress amount of lerp
 /// @return lerped value
-function lerp(from: number, to: number, progress: string) {
+function lerp(from: number, to: number, progress: number) {
   return from + (to - from) * progress;
 }
 
@@ -2231,7 +2270,7 @@ function _error(string: string) {
   alert(string);
 }
 
-function _onerror(e) {
+function _onerror(e: ErrorEvent) {
   var fa = e.filename.split("/");
   fa.reverse();
   log("[" + fa[0] + ":" + e.lineno + ":" + e.colno + "] " + e.message);
