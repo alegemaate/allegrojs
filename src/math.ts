@@ -106,14 +106,14 @@ export function linedist(
   x: number,
   y: number
 ) {
-  var px = ex2 - ex1;
-  var py = ey2 - ey1;
-  var u = ((x - ex1) * px + (y - ey1) * py) / (px * px + py * py);
+  const px = ex2 - ex1;
+  const py = ey2 - ey1;
+  let u = ((x - ex1) * px + (y - ey1) * py) / (px * px + py * py);
   if (u > 1) u = 1;
   else if (u < 0) u = 0;
 
-  var dx = ex1 + u * px - x;
-  var dy = ey1 + u * py - y;
+  const dx = ex1 + u * px - x;
+  const dy = ey1 + u * py - y;
   return Math.sqrt(dx * dx + dy * dy);
 }
 
@@ -149,7 +149,7 @@ export function sgn(a: number) {
 /// @param x2,y2 vector two
 /// @return angle in degrees, snapped to 0-360
 export function angle(x1: number, y1: number, x2: number, y2: number) {
-  var a = DEG(Math.atan2(y2 - y1, x2 - x1));
+  const a = DEG(Math.atan2(y2 - y1, x2 - x1));
   return a < 0 ? a + 360 : a;
 }
 
@@ -157,7 +157,7 @@ export function angle(x1: number, y1: number, x2: number, y2: number) {
 /// @param a,b, angles
 /// @return angle difference, in -180 to 180 range
 export function anglediff(a: number, b: number) {
-  var diff = b - a;
+  let diff = b - a;
   diff /= 360;
   diff = (diff - floor(diff)) * 360;
   if (diff > 180) {
@@ -175,12 +175,11 @@ export function clamp(value: number, min: number, max: number) {
   if (max > min) {
     if (value < min) return min;
     else if (value > max) return max;
-    else return value;
-  } else {
-    if (value < max) return max;
-    else if (value > min) return min;
-    else return value;
+    return value;
   }
+  if (value < max) return max;
+  else if (value > min) return min;
+  return value;
 }
 
 /// Scales a value from one range to another
@@ -210,13 +209,13 @@ export function scaleclamp(
   min2: number,
   max2: number
 ) {
-  value = min2 + ((value - min) / (max - min)) * (max2 - min2);
+  let cmp_val = min2 + ((value - min) / (max - min)) * (max2 - min2);
   if (max2 > min2) {
-    value = value < max2 ? value : max2;
-    return value > min2 ? value : min2;
+    cmp_val = cmp_val < max2 ? cmp_val : max2;
+    return cmp_val > min2 ? cmp_val : min2;
   }
-  value = value < min2 ? value : min2;
-  return value > max2 ? value : max2;
+  cmp_val = cmp_val < min2 ? cmp_val : min2;
+  return cmp_val > max2 ? cmp_val : max2;
 }
 
 //@}

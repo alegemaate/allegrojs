@@ -2,15 +2,11 @@
 /// @name CONFIGURATION ROUTINES
 //@{
 
-import { log } from "./config";
+import { log } from "./debug";
 
 /// Installs allegro.
-/// This function must be called before anything else. It makes sure Date.now() exists.
+/// This function must be called before anything else.
 export function install_allegro() {
-  if (!Date.now)
-    Date.now = function now() {
-      return new Date().getTime();
-    };
   log("Allegro installed!");
 }
 

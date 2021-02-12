@@ -2,7 +2,9 @@
 /// @name BITMAP OBJECTS
 //@{
 
+import { _downloadables } from "./core";
 import { log } from "./debug";
+import { blit } from "./sprites";
 import { AllegroBitmap } from "./types";
 
 /// Creates empty bitmap.
@@ -10,12 +12,12 @@ import { AllegroBitmap } from "./types";
 /// @param width bitmap width
 /// @param height bitmap height
 /// @return bitmap object
-function create_bitmap(width: number, height: number): AllegroBitmap {
+export function create_bitmap(width: number, height: number): AllegroBitmap {
   log("Creating bitmap at " + width + " x " + height + "!");
-  var cv = document.createElement("canvas");
+  const cv = document.createElement("canvas");
   cv.width = width;
   cv.height = height;
-  var ctx = cv.getContext("2d");
+  const ctx = cv.getContext("2d");
 
   if (!ctx) {
     throw new Error("Could not get context");
@@ -35,19 +37,18 @@ function create_bitmap(width: number, height: number): AllegroBitmap {
 /// Loads image from file asynchronously. This means that the execution won't stall for the image, and it's data won't be accessible right off the start. You can check for bitmap object's 'ready' member to see if it has loaded, but you probably should avoid stalling execution for that, as JS doesn't really like that.
 /// @param filename URL of image
 /// @return bitmap object, or -1 on error
-function load_bitmap(filename: string) {
+export function load_bitmap(filename: string) {
   log("Loading bitmap " + filename + "...");
-  var img = new Image();
+  const img = new Image();
   img.src = filename;
-  var now = time();
-  var cv = document.createElement("canvas");
-  var ctx = cv.getContext("2d");
+  const cv = document.createElement("canvas");
+  const ctx = cv.getContext("2d");
 
   if (!ctx) {
     throw new Error("Context not defined");
   }
 
-  var bmp: AllegroBitmap = {
+  const bmp: AllegroBitmap = {
     canvas: cv,
     context: ctx,
     w: -1,
@@ -57,7 +58,7 @@ function load_bitmap(filename: string) {
   };
 
   _downloadables.push(bmp);
-  img.onload = function () {
+  img.onload = () => {
     log(
       "Bitmap " +
         filename +
@@ -78,7 +79,7 @@ function load_bitmap(filename: string) {
 }
 
 /// Wrapper for load_bitmap
-function load_bmp(filename: string) {
+export function load_bmp(filename: string) {
   return load_bitmap(filename);
 }
 
@@ -87,19 +88,18 @@ function load_bmp(filename: string) {
 /// @param filename URL of image
 /// @param w,h frame dimensions
 /// @return bitmap object, or -1 on error
-function load_sheet(filename: string, w: number, h: number) {
+export function load_sheet(filename: string, w: number, h: number) {
   log("Loading spritesheet " + filename + "...");
-  var img = new Image();
+  const img = new Image();
   img.src = filename;
-  var now = time();
-  var cv = document.createElement("canvas");
-  var ctx = cv.getContext("2d");
+  const cv = document.createElement("canvas");
+  const ctx = cv.getContext("2d");
 
   if (!ctx) {
     throw new Error("Context not defined");
   }
 
-  var bmp: AllegroBitmap = {
+  const bmp: AllegroBitmap = {
     canvas: cv,
     context: ctx,
     w: -1,
@@ -108,11 +108,11 @@ function load_sheet(filename: string, w: number, h: number) {
     type: "bmp",
   };
 
-  var sheet: AllegroBitmap[] = [];
+  const sheet: AllegroBitmap[] = [];
 
   _downloadables.push(bmp);
 
-  img.onload = function () {
+  img.onload = () => {
     log(
       "Sheet " +
         filename +
@@ -129,11 +129,11 @@ function load_sheet(filename: string, w: number, h: number) {
     bmp.w = img.width;
     bmp.h = img.height;
     bmp.ready = true;
-    var nx = Math.floor(bmp.w / w),
+    const nx = Math.floor(bmp.w / w),
       ny = Math.floor(bmp.h / h);
 
-    for (var y = 0; y < ny; y++) {
-      for (var x = 0; x < nx; x++) {
+    for (let y = 0; y < ny; y += 1) {
+      for (let x = 0; x < nx; x += 1) {
         const frame = create_bitmap(w, h);
         blit(bmp, frame, x * w, y * h, 0, 0, w, h);
         sheet.push(frame);

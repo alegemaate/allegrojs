@@ -2,6 +2,7 @@
 /// @name DRAWING PRIMITIVES
 // @{
 
+import { PI2, RAD } from "./math";
 import { AllegroBitmap, AllegroCanvas } from "./types";
 
 /// Helper for setting fill style
@@ -23,11 +24,10 @@ export function _fillstyle(
 
 /// Helper for setting stroke style
 export function _strokestyle(
-  bitmap: AllegroBitmap,
+  bitmap: AllegroBitmap | AllegroCanvas,
   colour: number,
-  width: number
+  width = 1
 ) {
-  if (!width) width = 1;
   bitmap.context.lineWidth = width;
   bitmap.context.strokeStyle =
     "rgba(" +
@@ -48,8 +48,7 @@ export function _strokestyle(
 /// @param b blue  component in 0-255 range
 /// @param a alpha component in 0-255 range, defaults to 255 (fully opaque)
 /// @return colour in 0xAARRGGBB format
-export function makecol(r: number, g: number, b: number, a: number = 255) {
-  a = typeof a !== "undefined" ? a : 255;
+export function makecol(r: number, g: number, b: number, a = 255) {
   return (a << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
 }
 
@@ -60,8 +59,7 @@ export function makecol(r: number, g: number, b: number, a: number = 255) {
 /// @param b blue  component in 0.0-1.0 range
 /// @param a alpha component in 0.0-1.0 range, defaults to 1.0 (fully opaque)
 /// @return colour in 0xAARRGGBB format
-export function makecolf(r: number, g: number, b: number, a: number) {
-  a = typeof a !== "undefined" ? a : 1.0;
+export function makecolf(r: number, g: number, b: number, a = 1.0) {
   return makecol(r * 255, g * 255, b * 255, a * 255);
 }
 
@@ -131,8 +129,12 @@ export function getaf(colour: number) {
 /// @param x x coordinate of pixel
 /// @param y y coordinate of pixel
 /// @return colour in 0xAARRGGBB format
-export function getpixel(bitmap: AllegroBitmap, x: number, y: number) {
-  var data = bitmap.context.getImageData(x, y, 1, 1).data;
+export function getpixel(
+  bitmap: AllegroBitmap | AllegroCanvas,
+  x: number,
+  y: number
+) {
+  const { data } = bitmap.context.getImageData(x, y, 1, 1);
 
   return (
     ((data[3] ?? 0) << 24) |
@@ -149,7 +151,7 @@ export function getpixel(bitmap: AllegroBitmap, x: number, y: number) {
 /// @param y y coordinate of pixel
 /// @param colour colour in 0xAARRGGBB format
 export function putpixel(
-  bitmap: AllegroBitmap,
+  bitmap: AllegroBitmap | AllegroCanvas,
   x: number,
   y: number,
   colour: number
@@ -169,7 +171,10 @@ export function clear_bitmap(bitmap: AllegroBitmap) {
 /// Fills the entire bitmap with colour value.
 /// @param bitmap bitmap to be cleared
 /// @param colour colour in 0xAARRGGBB format
-export function clear_to_color(bitmap: AllegroBitmap, colour: number) {
+export function clear_to_color(
+  bitmap: AllegroBitmap | AllegroCanvas,
+  colour: number
+) {
   bitmap.context.clearRect(0, 0, bitmap.w, bitmap.h);
   _fillstyle(bitmap, colour);
   bitmap.context.fillRect(0, 0, bitmap.w, bitmap.h);
@@ -183,7 +188,7 @@ export function clear_to_color(bitmap: AllegroBitmap, colour: number) {
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width
 export function line(
-  bitmap: AllegroBitmap,
+  bitmap: AllegroBitmap | AllegroCanvas,
   x1: number,
   y1: number,
   x2: number,
@@ -206,14 +211,13 @@ export function line(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width (defaults to 1)
 export function vline(
-  bitmap: AllegroBitmap,
+  bitmap: AllegroBitmap | AllegroCanvas,
   x: number,
   y1: number,
   y2: number,
   colour: number,
-  width: number
+  width = 1
 ) {
-  width = typeof width !== "undefined" ? width : 1;
   _fillstyle(bitmap, colour);
   bitmap.context.fillRect(x - width / 2, y1, width, y2 - y1);
 }
@@ -226,14 +230,13 @@ export function vline(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width (defaults to 1)
 export function hline(
-  bitmap: AllegroBitmap,
+  bitmap: AllegroBitmap | AllegroCanvas,
   x1: number,
   y: number,
   x2: number,
   colour: number,
-  width: number
+  width = 1
 ) {
-  width = typeof width !== "undefined" ? width : 1;
   _fillstyle(bitmap, colour);
   bitmap.context.fillRect(x1, y - width / 2, x2 - x1, width);
 }
@@ -247,7 +250,7 @@ export function hline(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width
 export function triangle(
-  bitmap: AllegroBitmap,
+  bitmap: AllegroBitmap | AllegroCanvas,
   x1: number,
   y1: number,
   x2: number,
@@ -274,7 +277,7 @@ export function triangle(
 /// @param x3,y3 third point coordinates
 /// @param colour colour in 0xAARRGGBB format
 export function trianglefill(
-  bitmap: AllegroBitmap,
+  bitmap: AllegroBitmap | AllegroCanvas,
   x1: number,
   y1: number,
   x2: number,
@@ -300,7 +303,7 @@ export function trianglefill(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width
 export function polygon(
-  bitmap: AllegroBitmap,
+  bitmap: AllegroBitmap | AllegroCanvas,
   vertices: number,
   points: number[],
   colour: number,
@@ -308,7 +311,7 @@ export function polygon(
 ) {
   _strokestyle(bitmap, colour, width);
   bitmap.context.beginPath();
-  for (var c = 0; c < vertices; c++) {
+  for (let c = 0; c < vertices; c += 1) {
     if (c) bitmap.context.lineTo(points[c * 2] ?? 0, points[c * 2 + 1] ?? 0);
     else bitmap.context.moveTo(points[c * 2] ?? 0, points[c * 2 + 1] ?? 0);
   }
@@ -323,14 +326,14 @@ export function polygon(
 /// @param points array containing vertices*2 elements of polygon coordinates in [x1,y1,x2,y2,x3...] format
 /// @param colour colour in 0xAARRGGBB format
 export function polygonfill(
-  bitmap: AllegroBitmap,
+  bitmap: AllegroBitmap | AllegroCanvas,
   vertices: number,
   points: number[],
   colour: number
 ) {
   _fillstyle(bitmap, colour);
   bitmap.context.beginPath();
-  for (var c = 0; c < vertices; c++) {
+  for (let c = 0; c < vertices; c += 1) {
     if (c) bitmap.context.lineTo(points[c * 2] ?? 0, points[c * 2 + 1] ?? 0);
     else bitmap.context.moveTo(points[c * 2] ?? 0, points[c * 2 + 1] ?? 0);
   }
@@ -346,7 +349,7 @@ export function polygonfill(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width
 export function rect(
-  bitmap: AllegroBitmap,
+  bitmap: AllegroBitmap | AllegroCanvas,
   x1: number,
   y1: number,
   w: number,
@@ -384,7 +387,7 @@ export function rectfill(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width
 export function circle(
-  bitmap: AllegroBitmap,
+  bitmap: AllegroBitmap | AllegroCanvas,
   x: number,
   y: number,
   radius: number,
@@ -425,7 +428,7 @@ export function circlefill(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width
 export function arc(
-  bitmap: AllegroBitmap,
+  bitmap: AllegroBitmap | AllegroCanvas,
   x: number,
   y: number,
   ang1: number,
@@ -478,7 +481,7 @@ export function arcfill(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width
 export function ellipse(
-  bitmap: AllegroBitmap,
+  bitmap: AllegroBitmap | AllegroCanvas,
   x: number,
   y: number,
   rx: number,
@@ -503,7 +506,7 @@ export function ellipse(
 /// @param rx,ry ellipse radius in x and y
 /// @param colour colour in 0xAARRGGBB format
 export function ellipsefill(
-  bitmap: AllegroBitmap,
+  bitmap: AllegroBitmap | AllegroCanvas,
   x: number,
   y: number,
   rx: number,

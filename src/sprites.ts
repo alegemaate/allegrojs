@@ -3,7 +3,7 @@
 //@{
 
 import { RAD } from "./math";
-import { AllegroBitmap } from "./types";
+import { AllegroBitmap, AllegroCanvas } from "./types";
 
 /// Draws a sprite
 /// This is probably the fastest method to get images on screen. The image will be centered. Opposed to traditional allegro approach, sprite is drawn centered.
@@ -11,8 +11,8 @@ import { AllegroBitmap } from "./types";
 /// @param sprite sprite bitmap
 /// @param x,y coordinates of the top left corder of the image center
 export function draw_sprite(
-  bmp: AllegroBitmap,
-  sprite: AllegroBitmap,
+  bmp: AllegroBitmap | AllegroCanvas,
+  sprite: AllegroBitmap | AllegroCanvas,
   x: number,
   y: number
 ) {
@@ -27,19 +27,18 @@ export function draw_sprite(
 /// @param sx horizontal scale , 1.0 is unscaled
 /// @param sy vertical scale (defaults to sx)
 export function scaled_sprite(
-  bmp: AllegroBitmap,
-  sprite: AllegroBitmap,
+  bmp: AllegroBitmap | AllegroCanvas,
+  sprite: AllegroBitmap | AllegroCanvas,
   x: number,
   y: number,
   sx: number,
-  sy: number
+  sy?: number
 ) {
-  sy = typeof sy !== "undefined" ? sy : sx;
   const u = (sx * sprite.w) / 2;
-  const v = (sy * sprite.h) / 2;
+  const v = ((sy ?? sx) * sprite.h) / 2;
   bmp.context.save();
   bmp.context.translate(x - u, y - v);
-  bmp.context.scale(sx, sy);
+  bmp.context.scale(sx, sy ?? sx);
   bmp.context.drawImage(sprite.canvas, 0, 0);
   bmp.context.restore();
 }
@@ -51,8 +50,8 @@ export function scaled_sprite(
 /// @param x,y coordinates of the centre of the image
 /// @param angle angle of rotation in degrees
 export function rotate_sprite(
-  bmp: AllegroBitmap,
-  sprite: AllegroBitmap,
+  bmp: AllegroBitmap | AllegroCanvas,
+  sprite: AllegroBitmap | AllegroCanvas,
   x: number,
   y: number,
   angle: number
@@ -75,8 +74,8 @@ export function rotate_sprite(
 /// @param cx,cy pivot point coordinates
 /// @param angle angle of rotation in degrees
 export function pivot_sprite(
-  bmp: AllegroBitmap,
-  sprite: AllegroBitmap,
+  bmp: AllegroBitmap | AllegroCanvas,
+  sprite: AllegroBitmap | AllegroCanvas,
   x: number,
   y: number,
   cx: number,
@@ -100,22 +99,21 @@ export function pivot_sprite(
 /// @param sx horizontal scale, 1.0 is unscaled
 /// @param sy vertical scale (defaults to sx)
 export function rotate_scaled_sprite(
-  bmp: AllegroBitmap,
-  sprite: AllegroBitmap,
+  bmp: AllegroBitmap | AllegroCanvas,
+  sprite: AllegroBitmap | AllegroCanvas,
   x: number,
   y: number,
   angle: number,
   sx: number,
-  sy: number
+  sy?: number
 ) {
-  sy = typeof sy !== "undefined" ? sy : sx;
-  var u = (sx * sprite.w) / 2;
-  var v = (sy * sprite.h) / 2;
+  const u = (sx * sprite.w) / 2;
+  const v = ((sy ?? sx) * sprite.h) / 2;
   bmp.context.save();
   bmp.context.translate(x, y);
   bmp.context.rotate(RAD(angle));
   bmp.context.translate(-u, -v);
-  bmp.context.scale(sx, sy);
+  bmp.context.scale(sx, sy ?? sx);
   bmp.context.drawImage(sprite.canvas, 0, 0);
   bmp.context.restore();
 }
@@ -130,24 +128,23 @@ export function rotate_scaled_sprite(
 /// @param sx horizontal scale , 1.0 is unscaled
 /// @param sy vertical scale (defaults to sx)
 export function pivot_scaled_sprite(
-  bmp: AllegroBitmap,
-  sprite: AllegroBitmap,
+  bmp: AllegroBitmap | AllegroCanvas,
+  sprite: AllegroBitmap | AllegroCanvas,
   x: number,
   y: number,
   cx: number,
   cy: number,
   angle: number,
   sx: number,
-  sy: number
+  sy?: number
 ) {
-  sy = typeof sy !== "undefined" ? sy : sx;
-  var u = sx * cx;
-  var v = sy * cy;
+  const u = sx * cx;
+  const v = (sy ?? sx) * cy;
   bmp.context.save();
   bmp.context.translate(x, y);
   bmp.context.rotate(RAD(angle));
   bmp.context.translate(-u, -v);
-  bmp.context.scale(sx, sy);
+  bmp.context.scale(sx, sy ?? sx);
   bmp.context.drawImage(sprite.canvas, 0, 0);
   bmp.context.restore();
 }
@@ -162,8 +159,8 @@ export function pivot_scaled_sprite(
 /// @todo make rotated versions of this
 /// @todo tell everyone that blitting to itself is slower than the other thing (requires copy?)
 export function blit(
-  source: AllegroBitmap,
-  dest: AllegroBitmap,
+  source: AllegroBitmap | AllegroCanvas,
+  dest: AllegroBitmap | AllegroCanvas,
   sx: number,
   sy: number,
   dx: number,
@@ -182,8 +179,8 @@ export function blit(
 /// @todo make rotated versions of this
 /// @todo tell everyone that blitting to itself is slower than the other thing (requires copy?)
 export function simple_blit(
-  source: AllegroBitmap,
-  dest: AllegroBitmap,
+  source: AllegroBitmap | AllegroCanvas,
+  dest: AllegroBitmap | AllegroCanvas,
   x: number,
   y: number
 ) {
@@ -199,8 +196,8 @@ export function simple_blit(
 /// @param dx,dy top-left bitmap corner coordinates in target bitmap
 /// @param dw,dh destination dimensions
 export function stretch_blit(
-  source: AllegroBitmap,
-  dest: AllegroBitmap,
+  source: AllegroBitmap | AllegroCanvas,
+  dest: AllegroBitmap | AllegroCanvas,
   sx: number,
   sy: number,
   sw: number,

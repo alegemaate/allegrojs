@@ -1,25 +1,25 @@
 /// @name TOUCH ROUTINES
 //@{
 
+import { log, _allog } from "./debug";
+import { canvas } from "./graphics";
+import { AllegroTouchEvent } from "./types";
+
 /// is touch installed
-var _touch_installed = false;
+export let _touch_installed = false;
 
 /// Array of AllegroTouchEvent holding the currently held touches
-var touch: AllegroTouchEvent[] = [];
+export const touch: AllegroTouchEvent[] = [];
 
 /// Array of AllegroTouchEvent holding the just started touches
-var touch_pressed: AllegroTouchEvent[] = [];
+export const touch_pressed: AllegroTouchEvent[] = [];
 
 /// Array of AllegroTouchEvent holding the just finished touches
-var touch_released: AllegroTouchEvent[] = [];
+export const touch_released: AllegroTouchEvent[] = [];
 
 /// Installs touch support
 /// Installs handlers for touch events. After calling this, touch* arrays will get populated with multitouch data maximum touch points depend on the device. Four is usually a safe option.
-function install_touch() {
-  if (!canvas) {
-    _error("You must call set_gfx_mode before install_touch");
-    return -1;
-  }
+export function install_touch() {
   if (_touch_installed) {
     _allog("Touch already installed");
     return -1;
@@ -30,15 +30,12 @@ function install_touch() {
   canvas.canvas.addEventListener("touchmove", _touchmove);
   _touch_installed = true;
   log("Touch installed!");
+  return 0;
 }
 
 /// Removes touch support
 /// Uninstalls handlers for touch events.
-function remove_touch() {
-  if (!canvas) {
-    _error("You must call set_gfx_mode before install_touch");
-    return -1;
-  }
+export function remove_touch() {
   if (!_touch_installed) {
     _allog("Touch not installed");
     return -1;
@@ -49,25 +46,40 @@ function remove_touch() {
   canvas.canvas.removeEventListener("touchmove", _touchmove);
   _touch_installed = false;
   log("Touch removed!");
+  return 0;
 }
 
-function _get_touch(id?: number) {
+export function _touch_loop() {
+  if (_touch_installed) {
+    touch_released.length = 0;
+    touch_pressed.length = 0;
+    touch.forEach((t) => {
+      t.mx = 0;
+      t.my = 0;
+      t.px = t.x;
+      t.py = t.y;
+      t.age += 1;
+    });
+  }
+}
+
+export function _get_touch(id?: number) {
   if (typeof id !== "number") {
     return null;
   }
   return touch.find((t) => t.id === id) ?? null;
 }
 
-function _touchstart(e: TouchEvent) {
+export function _touchstart(e: TouchEvent) {
   if (!e.target) {
     return;
   }
-  var rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
-  for (var c = 0; c < e.changedTouches.length; c++) {
-    var point = e.changedTouches.item(c);
+  const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
+  for (let c = 0; c < e.changedTouches.length; c += 1) {
+    const point = e.changedTouches.item(c);
 
     if (point) {
-      var t: AllegroTouchEvent = {
+      const t: AllegroTouchEvent = {
         sx: point.clientX - rect.left,
         sy: point.clientY - rect.top,
         mx: 0,
@@ -87,10 +99,10 @@ function _touchstart(e: TouchEvent) {
   e.preventDefault();
 }
 
-function _touchend(e: TouchEvent) {
-  for (var c = 0; c < e.changedTouches.length; c++) {
-    var point = e.changedTouches.item(c);
-    var t = _get_touch(point?.identifier);
+export function _touchend(e: TouchEvent) {
+  for (let c = 0; c < e.changedTouches.length; c += 1) {
+    const point = e.changedTouches.item(c);
+    const t = _get_touch(point?.identifier);
     if (t) {
       touch.splice(touch.indexOf(t), 1);
       touch_released.push(t);
@@ -100,17 +112,17 @@ function _touchend(e: TouchEvent) {
   e.preventDefault();
 }
 
-function _touchmove(e: TouchEvent) {
+export function _touchmove(e: TouchEvent) {
   if (!e.target) {
     return;
   }
-  var rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
-  for (var c = 0; c < e.changedTouches.length; c++) {
-    var point = e.changedTouches.item(c);
-    var t = _get_touch(point?.identifier);
+  const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
+  for (let c = 0; c < e.changedTouches.length; c += 1) {
+    const point = e.changedTouches.item(c);
+    const t = _get_touch(point?.identifier);
     if (t && point) {
-      var x = point.clientX - rect.left;
-      var y = point.clientY - rect.top;
+      const x = point.clientX - rect.left;
+      const y = point.clientY - rect.top;
       t.mx += t.x - x;
       t.my += t.y - y;
       t.x = x;

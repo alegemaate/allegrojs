@@ -14,7 +14,7 @@
     "lib": ["ESNext", "DOM"],
     "declaration": true,
     "sourceMap": true,
-    "outDir": "build"
+    "outDir": "./build"
   },
-  "include": ["src/allegro.ts"]
+  "include": ["./src/*.ts"]
 }

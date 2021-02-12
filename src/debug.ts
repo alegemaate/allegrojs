@@ -7,11 +7,13 @@ let _debug_element: HTMLElement | null = null;
 
 /// Set this to true if you want to debug to browser console.
 /// Setting this will make log() log to browser debugger console using console.log().
+// eslint-disable-next-line prefer-const
 let ALLEGRO_CONSOLE = false;
 
 /// Fatal error displays alert and logs to console
 export function _error(string: string) {
   log("[ERROR] " + string);
+  // eslint-disable-next-line no-alert
   alert(string);
 }
 
@@ -34,7 +36,7 @@ export function enable_debug(id: string) {
 /// Only works after enable_debug() has been called. Will append <br/> newline tag. You can use html inside your logs too.
 /// @param string text to log
 export function log(string: string) {
-  if (ALLEGRO_CONSOLE && console) console.log(string);
+  if (ALLEGRO_CONSOLE) console.log(string);
   if (!_debug_enabled || !_debug_element) return;
   _debug_element.innerHTML = _debug_element.innerHTML + string + "<br/>";
 }
@@ -43,7 +45,7 @@ export function log(string: string) {
 /// Only works after enable_debug() has been called. Will append <br/> newline tag. You can use html inside your logs too.
 /// @param string text to log
 export function _allog(string: string) {
-  if (ALLEGRO_CONSOLE && console) console.log(string);
+  if (ALLEGRO_CONSOLE) console.log(string);
   if (!_debug_enabled || !_debug_element) return;
   _debug_element.innerHTML = _debug_element.innerHTML + string + "<br/>";
 }
