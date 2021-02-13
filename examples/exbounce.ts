@@ -1,12 +1,34 @@
+import {
+  set_gfx_mode,
+  load_bmp,
+  ready,
+  canvas,
+  END_OF_MAIN,
+  stretch_blit,
+  SCREEN_W,
+  SCREEN_H,
+  play_sample,
+  enable_debug,
+  BPS_TO_TIMER,
+  loop,
+  makecol,
+  clear_to_color,
+  install_sound,
+  load_sample,
+  draw_sprite,
+  AllegroBitmap,
+  AllegroSample,
+} from "../src/allegro.js";
+
 // bitmap oobjects
-var clouds, ball;
+let clouds!: AllegroBitmap;
+let ball!: AllegroBitmap;
 
 // sample object
-var bounce;
+var bounce!: AllegroSample;
 
 // size and speed of the ball
-var size = 64,
-  speed = 5;
+var speed = 5;
 
 // positon of the ball
 var cx = 100,
@@ -28,8 +50,8 @@ function draw() {
     clouds.h,
     0,
     0,
-    AllegroJS.SCREEN_W,
-    AllegroJS.SCREEN_H
+    SCREEN_W,
+    SCREEN_H
   );
 
   // draws the ball centered
@@ -44,11 +66,11 @@ function update() {
   // if the ball is going to collide with screen bounds
   // after applying velocity, if so, reverse velocity
   // and remember that it bonced
-  if (cx + vx > AllegroJS.SCREEN_W) {
+  if (cx + vx > SCREEN_W) {
     vx = -speed;
     bounced = true;
   }
-  if (cy + vy > AllegroJS.SCREEN_H) {
+  if (cy + vy > SCREEN_H) {
     vy = -speed * 3;
     bounced = true;
   }

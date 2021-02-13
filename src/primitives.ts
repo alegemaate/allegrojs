@@ -2,8 +2,8 @@
 /// @name DRAWING PRIMITIVES
 // @{
 
-import { PI2, RAD } from "./math";
-import { AllegroBitmap, AllegroCanvas } from "./types";
+import { PI2, RAD } from "./math.js";
+import { AllegroBitmap, AllegroCanvas } from "./types.js";
 
 /// Helper for setting fill style
 export function _fillstyle(

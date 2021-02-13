@@ -2,10 +2,10 @@
 /// @name BITMAP OBJECTS
 //@{
 
-import { _downloadables } from "./core";
-import { log } from "./debug";
-import { blit } from "./sprites";
-import { AllegroBitmap } from "./types";
+import { _downloadables } from "./core.js";
+import { log } from "./debug.js";
+import { blit } from "./sprites.js";
+import { AllegroBitmap } from "./types.js";
 
 /// Creates empty bitmap.
 /// Creates a bitmap object of given dimensions and returns it.

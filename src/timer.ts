@@ -1,8 +1,8 @@
 /// @name TIMER ROUTINES
 //@{
 
-import { log } from "./debug";
-import { AllegroTimer } from "./types";
+import { log } from "./debug.js";
+import { AllegroTimer } from "./types.js";
 
 /// holds all currently installed timers
 let _installed_timers: AllegroTimer[] = [];

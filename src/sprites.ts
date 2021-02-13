@@ -2,8 +2,8 @@
 /// @name BLITTING AND SPRITES
 //@{
 
-import { RAD } from "./math";
-import { AllegroBitmap, AllegroCanvas } from "./types";
+import { RAD } from "./math.js";
+import { AllegroBitmap, AllegroCanvas } from "./types.js";
 
 /// Draws a sprite
 /// This is probably the fastest method to get images on screen. The image will be centered. Opposed to traditional allegro approach, sprite is drawn centered.

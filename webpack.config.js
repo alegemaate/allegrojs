@@ -11,6 +11,9 @@ module.exports = {
   output: {
     path: path.resolve(__dirname, "./build"),
     filename: "[name].js",
+    libraryTarget: "umd",
+    library: "AllegroJS",
+    umdNamedDefine: true,
   },
   optimization: {
     minimizer: [

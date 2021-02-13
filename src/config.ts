@@ -2,7 +2,7 @@
 /// @name CONFIGURATION ROUTINES
 //@{
 
-import { log } from "./debug";
+import { log } from "./debug.js";
 
 /// Installs allegro.
 /// This function must be called before anything else.

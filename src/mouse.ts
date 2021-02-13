@@ -2,8 +2,8 @@
 /// @name MOUSE ROUTINES
 //@{
 
-import { log, _allog, _error } from "./debug";
-import { canvas } from "./graphics";
+import { log, _allog, _error } from "./debug.js";
+import { canvas } from "./graphics.js";
 
 /// Mouse button bitmask.
 /// Each bit in the mask represents a separate mouse button state. If right mouse button is down, mouse_b value would be 4, 00100 in binary. Each bit represents one mouse button. use something like if (mouse_b&1) to check for separate buttons.
@@ -63,7 +63,7 @@ export let _menu_supress = false;
 /// Installs mouse handlers.
 /// Must be called after set_gfx_mode() to be able to determine mouse position within the given canvas!
 /// @param menu If true, context menu will be available on right click on canvas. Default is false.
-export function install_mouse(menu: boolean) {
+export function install_mouse(menu = false) {
   if (_mouse_installed) {
     _allog("Mouse already installed");
     return -1;

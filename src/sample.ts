@@ -2,9 +2,9 @@
 /// @name SOUND ROUTINES
 //@[
 
-import { _downloadables } from "./core";
-import { log } from "./debug";
-import { AllegroSample } from "./types";
+import { _downloadables } from "./core.js";
+import { log } from "./debug.js";
+import { AllegroSample } from "./types.js";
 
 let _volume = 1.0;
 

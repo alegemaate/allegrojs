@@ -1,7 +1,7 @@
-export { create_bitmap, load_bitmap, load_bmp, load_sheet } from "./bitmap";
-export { END_OF_MAIN, allegro_init, install_allegro } from "./config";
-export { ready, loop } from "./core";
-export { enable_debug, log } from "./debug";
+export { create_bitmap, load_bitmap, load_bmp, load_sheet } from "./bitmap.js";
+export { END_OF_MAIN, allegro_init, install_allegro } from "./config.js";
+export { ready, loop, loading_bar } from "./core.js";
+export { enable_debug, log } from "./debug.js";
 export {
   create_font,
   load_base64_font,
@@ -9,15 +9,15 @@ export {
   textout,
   textout_centre,
   textout_right,
-} from "./font";
-export { SCREEN_H, SCREEN_W, canvas, font, set_gfx_mode } from "./graphics";
+} from "./font.js";
+export { SCREEN_H, SCREEN_W, canvas, font, set_gfx_mode } from "./graphics.js";
 export {
   install_keyboard,
   remove_keyboard,
   key,
   pressed,
   released,
-} from "./keyboard";
+} from "./keyboard.js";
 export {
   DEG,
   PI,
@@ -42,7 +42,7 @@ export {
   scale,
   scaleclamp,
   sgn,
-} from "./math";
+} from "./math.js";
 export {
   hide_mouse,
   install_mouse,
@@ -52,7 +52,12 @@ export {
   mouse_z,
   mouse_pressed,
   mouse_released,
-} from "./mouse";
+  remove_mouse,
+  show_mouse,
+  mouse_mx,
+  mouse_my,
+  mouse_mz,
+} from "./mouse.js";
 export {
   arc,
   arcfill,
@@ -83,7 +88,7 @@ export {
   triangle,
   trianglefill,
   vline,
-} from "./primitives";
+} from "./primitives.js";
 export {
   adjust_sample,
   destroy_sample,
@@ -94,7 +99,7 @@ export {
   play_sample,
   set_volume,
   stop_sample,
-} from "./sample";
+} from "./sample.js";
 export {
   blit,
   draw_sprite,
@@ -105,7 +110,7 @@ export {
   scaled_sprite,
   simple_blit,
   stretch_blit,
-} from "./sprites";
+} from "./sprites.js";
 export {
   BPM_TO_TIMER,
   BPS_TO_TIMER,
@@ -117,14 +122,14 @@ export {
   remove_all_ints,
   remove_int,
   time,
-} from "./timer";
+} from "./timer.js";
 export {
   touch,
   touch_pressed,
   touch_released,
   install_touch,
   remove_touch,
-} from "./touch";
+} from "./touch.js";
 export {
   AllegroBitmap,
   AllegroCanvas,
@@ -132,4 +137,4 @@ export {
   AllegroSample,
   AllegroTimer,
   AllegroTouchEvent,
-} from "./types";
+} from "./types.js";

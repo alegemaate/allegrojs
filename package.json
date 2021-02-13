@@ -8,7 +8,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "webpack",
+    "build": "tsc --p tsconfig.json",
+    "build-webpack": "webpack",
+    "build-examples": "tsc --p examples/tsconfig.json",
     "lint": "eslint ."
   },
   "devDependencies": {

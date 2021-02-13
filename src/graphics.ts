@@ -2,9 +2,9 @@
 /// @name GRAPHICS MODES
 //@{
 
-import { log, _error } from "./debug";
-import { load_base64_font, _cartoon_woff } from "./font";
-import { AllegroCanvas, AllegroFont } from "./types";
+import { log, _error } from "./debug.js";
+import { load_base64_font, _cartoon_woff } from "./font.js";
+import { AllegroCanvas, AllegroFont } from "./types.js";
 
 const tmpCanvas = document.createElement("canvas");
 
@@ -27,7 +27,8 @@ export let SCREEN_W = 0;
 export let SCREEN_H = 0;
 
 /// default font
-export let font: AllegroFont | null = null;
+// eslint-disable-next-line @typescript-eslint/init-declarations
+export let font!: AllegroFont;
 
 /// Enables graphics.
 /// This function should be before calling any other graphics routines. It selects the canvas element for rendering and sets the resolution. It also loads the default font.

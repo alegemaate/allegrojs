@@ -7,7 +7,8 @@ import {
   canvas,
   SCREEN_H,
   SCREEN_W,
-} from "../../src/allegro";
+  END_OF_MAIN,
+} from "../src/allegro.js";
 
 // Globally declared bitmap object
 function main() {

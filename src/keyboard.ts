@@ -2,7 +2,7 @@
 /// @name KEYBOARD ROUTINES
 //@{
 
-import { _allog, log } from "./debug";
+import { _allog, log } from "./debug.js";
 
 export const KEY_0 = 0x30,
   KEY_0_PAD = 0x60,

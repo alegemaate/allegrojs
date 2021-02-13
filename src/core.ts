@@ -1,15 +1,15 @@
 /// @name CORE ROUTINES
 //@{
 
-import { log } from "./debug";
-import { canvas, SCREEN_H, SCREEN_W } from "./graphics";
-import { _keyboard_loop } from "./keyboard";
-import { scaleclamp } from "./math";
-import { _mouse_loop, _mouse_loop_reset } from "./mouse";
-import { makecol, rectfill } from "./primitives";
-import { time } from "./timer";
-import { _touch_loop } from "./touch";
-import { AllegroBitmap, AllegroSample } from "./types";
+import { log } from "./debug.js";
+import { canvas, SCREEN_H, SCREEN_W } from "./graphics.js";
+import { _keyboard_loop } from "./keyboard.js";
+import { scaleclamp } from "./math.js";
+import { _mouse_loop, _mouse_loop_reset } from "./mouse.js";
+import { makecol, rectfill } from "./primitives.js";
+import { time } from "./timer.js";
+import { _touch_loop } from "./touch.js";
+import { AllegroBitmap, AllegroSample } from "./types.js";
 
 /// All downloadable objects
 export const _downloadables: (AllegroBitmap | AllegroSample)[] = [];

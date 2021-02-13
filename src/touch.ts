@@ -1,9 +1,9 @@
 /// @name TOUCH ROUTINES
 //@{
 
-import { log, _allog } from "./debug";
-import { canvas } from "./graphics";
-import { AllegroTouchEvent } from "./types";
+import { log, _allog } from "./debug.js";
+import { canvas } from "./graphics.js";
+import { AllegroTouchEvent } from "./types.js";
 
 /// is touch installed
 export let _touch_installed = false;
