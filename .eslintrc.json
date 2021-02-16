@@ -37,6 +37,8 @@
     "no-console": 0,
     "max-lines-per-function": 0,
     "max-lines": 0,
+    "capitalized-comments": 0,
+    "no-inline-comments": 0,
 
     "@typescript-eslint/no-magic-numbers": 0,
     "@typescript-eslint/naming-convention": 0,
@@ -49,6 +51,7 @@
     "@typescript-eslint/explicit-module-boundary-types": 0,
     "@typescript-eslint/no-implicit-any-catch": 0,
     "@typescript-eslint/no-use-before-define": 0,
-    "@typescript-eslint/restrict-plus-operands": 0
+    "@typescript-eslint/restrict-plus-operands": 0,
+    "@typescript-eslint/no-shadow": 0
   }
 }

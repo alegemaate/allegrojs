@@ -39,7 +39,8 @@ import {
   desktop_palette,
   timer_driver,
   enable_debug,
-  loop,
+  readkey,
+  keypressed,
 } from "../src/allegro.js";
 
 enable_debug("debug");
@@ -69,7 +70,7 @@ function inc_z() {
 
 END_OF_FUNCTION(inc_z);
 
-function main() {
+async function main() {
   let c: number;
 
   if (allegro_init() != 0) return 1;
@@ -92,7 +93,7 @@ function main() {
     font,
     SCREEN_W / 2,
     8,
-    makecol(255, 255, 255),
+    makecol(0, 0, 0),
     makecol(255, 255, 255),
     "Driver: %s",
     timer_driver.name
@@ -104,7 +105,7 @@ function main() {
     font,
     SCREEN_W / 2,
     48,
-    makecol(255, 255, 255),
+    makecol(0, 0, 0),
     makecol(255, 255, 255),
     "Timing five seconds:"
   );
@@ -115,12 +116,12 @@ function main() {
       font,
       SCREEN_W / 2,
       62 + c * 10,
-      makecol(255, 255, 255),
+      makecol(0, 0, 0),
       makecol(255, 255, 255),
       "%d",
       c
     );
-    rest(1000);
+    await rest(1000);
   }
 
   textprintf_centre_ex(
@@ -128,11 +129,12 @@ function main() {
     font,
     SCREEN_W / 2,
     142,
-    makecol(255, 255, 255),
+    makecol(0, 0, 0),
     makecol(255, 255, 255),
     "Press a key to set up interrupts"
   );
-  // readkey();
+
+  await readkey();
 
   /* all variables and code used inside interrupt handlers must be locked */
   LOCK_VARIABLE(x);
@@ -152,20 +154,22 @@ function main() {
   install_int_ex(inc_z, SECS_TO_TIMER(10));
 
   /* the interrupts are now active... */
-  loop(() => {
+  while (!keypressed()) {
     textprintf_centre_ex(
       screen,
       font,
       SCREEN_W / 2,
       176,
-      makecol(255, 255, 255),
+      makecol(0, 0, 0),
       makecol(255, 255, 255),
       "x=%d, y=%d, z=%d",
       x,
       y,
       z
     );
-  }, 16.6);
+
+    await rest(10);
+  }
 
   return 0;
 }

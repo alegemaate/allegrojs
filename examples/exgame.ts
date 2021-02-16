@@ -7,8 +7,6 @@ import {
   SCREEN_H,
   play_sample,
   enable_debug,
-  BPS_TO_TIMER,
-  loop,
   makecol,
   load_sample,
   draw_sprite,
@@ -31,6 +29,7 @@ import {
   KEY_UP,
   allegro_init,
   GFX_AUTODETECT,
+  rest,
 } from "../src/allegro.js";
 
 //bitmap objects
@@ -101,7 +100,7 @@ function update() {
   }
 }
 
-function main() {
+async function main() {
   enable_debug("debug");
 
   allegro_init();
@@ -115,12 +114,13 @@ function main() {
   bg = load_bmp("data/grass.jpg");
   munch = load_sample("data/munch.mp3");
 
-  ready(() => {
-    loop(() => {
-      update();
-      draw();
-    }, BPS_TO_TIMER(60));
-  });
+  await ready();
+
+  while (true) {
+    update();
+    draw();
+    await rest(16);
+  }
   return 0;
 }
 END_OF_MAIN(main);

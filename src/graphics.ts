@@ -19,6 +19,7 @@ export let SCREEN_H = 0;
 
 /// 1.9.1
 export function set_color_depth(depth: number) {
+  void depth;
   return 0;
 }
 
@@ -28,7 +29,9 @@ export function get_color_depth() {
 }
 
 /// 1.9.3
-export function request_refresh_rate(rate: number) {}
+export function request_refresh_rate(rate: number) {
+  void rate;
+}
 
 /// 1.9.4
 export function get_refresh_rate() {
@@ -37,11 +40,14 @@ export function get_refresh_rate() {
 
 /// 1.9.5
 export function get_gfx_mode_list(card: number) {
+  void card;
   return [[0, 0, 0]];
 }
 
 /// 1.9.6
-export function destroy_gfx_mode_list(mode_list: number[]) {}
+export function destroy_gfx_mode_list(mode_list: number[]) {
+  void mode_list;
+}
 
 /// 1.9.7
 /// Enables graphics.
@@ -72,12 +78,8 @@ export function set_gfx_mode(
     return -1;
   }
 
-  const rect = cv.getBoundingClientRect();
-  const cmp_width = w ?? rect.width;
-  const cmp_height = h ?? rect.height;
-
-  cv.width = cmp_width;
-  cv.height = cmp_height;
+  cv.width = w;
+  cv.height = h;
 
   const ctx = cv.getContext("2d");
   if (!ctx) {
@@ -87,19 +89,19 @@ export function set_gfx_mode(
   // Turn off image aliasing
   ctx.imageSmoothingEnabled = false;
 
-  SCREEN_W = cmp_width;
-  SCREEN_H = cmp_height;
+  SCREEN_W = w;
+  SCREEN_H = h;
 
-  screen.w = cmp_width;
-  screen.h = cmp_height;
+  screen.w = w;
+  screen.h = h;
   screen.canvas = cv;
   screen.context = ctx;
   screen.ready = true;
   clear_to_color(screen, makecol(0, 0, 0));
 
-  font = { element: null, file: "", name: "Monospace", size: 14, type: "fnt" };
+  font = { element: null, file: "", name: "Monospace", size: 12, type: "fnt" };
   _gfx_installed = true;
-  log("Graphics mode set to " + cmp_width + " x " + cmp_height);
+  log("Graphics mode set to " + w + " x " + h);
   return 0;
 }
 
@@ -110,16 +112,23 @@ export const GFX_AUTODETECT_WINDOWED = 2;
 export const GFX_SAFE = 3;
 
 /// 1.9.8
-export function set_display_switch_mode(mode: number) {}
+export function set_display_switch_mode(mode: number) {
+  void mode;
+}
 
 /// 1.9.9
-export function set_display_switch_callback(dir: number, cb: () => void) {}
+export function set_display_switch_callback(dir: number, cb: () => void) {
+  void dir;
+  void cb;
+}
 
 /// 1.9.10
-export function remove_display_switch_callback(cb: () => void) {}
+export function remove_display_switch_callback(cb: () => void) {
+  void cb;
+}
 
 /// 1.9.11
-export function get_dispaly_swittch_mode() {
+export function get_dispaly_switch_mode() {
   return 0;
 }
 
@@ -165,17 +174,25 @@ export function enable_triple_buffer(): number {
 }
 
 /// 1.9.15
-export function scroll_screen(x: number, y: number) {}
+export function scroll_screen(x: number, y: number) {
+  void x;
+  void y;
+}
 
 /// 1.9.16
-export function request_scroll(x: number, y: number) {}
+export function request_scroll(x: number, y: number) {
+  void x;
+  void y;
+}
 
 /// 1.9.17
-export function poll_scroll() {}
+export function poll_scroll() {
+  // NOOP
+}
 
 /// 1.9.18
 export function show_video_bitmap(bmp: BITMAP | undefined) {
-  if (!bmp || bmp.w != screen.w || bmp.h != screen.h) {
+  if (!bmp || bmp.w !== screen.w || bmp.h !== screen.h) {
     return;
   }
 
@@ -184,11 +201,14 @@ export function show_video_bitmap(bmp: BITMAP | undefined) {
 
 /// 1.9.19
 export function request_video_bitmap(bmp: BITMAP | undefined) {
+  void bmp;
   return 0;
 }
 
 /// 1.9.20
-export function vsync() {}
+export function vsync() {
+  // NOOP
+}
 
 export let _gfx_installed = false;
 

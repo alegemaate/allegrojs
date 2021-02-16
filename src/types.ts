@@ -3,14 +3,6 @@
 //@{
 
 /// Special types
-export type ALLEGRO_CANVAS = {
-  w: number;
-  h: number;
-  canvas: HTMLCanvasElement;
-  context: CanvasRenderingContext2D;
-  ready: boolean;
-};
-
 export type CONFIG_DATA = Record<string, Record<string, string>>;
 
 export type CONFIG = {
@@ -164,10 +156,14 @@ export type V3D_f = {
 };
 
 /// 1.2.16
-export type COLOR_MAP = {};
+export type COLOR_MAP = {
+  data: number[][];
+};
 
 /// 1.2.17
-export type RGB_MAP = {};
+export type RGB_MAP = {
+  data: number[][][];
+};
 
 /// 1.2.18
 export type al_ffblk = {
@@ -206,7 +202,7 @@ export type QUAT = {
 
 /// 1.2.23
 export type DIALOG = {
-  proc: () => {};
+  proc: () => void;
   x: number;
   y: number;
   w: number;
@@ -231,10 +227,43 @@ export type MENU = {
 };
 
 /// 1.2.25
-export type DIALOG_PLAYER = {};
+export type DIALOG_PLAYER = {
+  obj: number;
+  res: number;
+  mouse_obj: number;
+  focus_obj: number;
+  joy_on: number;
+  click_wait: number;
+  mouse_ox: number;
+  mouse_oy: number;
+  mouse_oz: number;
+  mouse_b: number;
+  dialog: DIALOG;
+};
 
 /// 1.2.26
-export type MENU_PLAYER = {};
+export type MENU_PLAYER = {
+  menu: MENU /* the menu itself */;
+  bar: number /* set if it is a top level menu bar */;
+  size: number /* number of items in the menu */;
+  sel: number /* selected item */;
+  x: number /* screen position of the menu */;
+  y: number /* screen position of the menu */;
+  w: number /* screen position of the menu */;
+  h: number /* screen position of the menu */;
+  numberproc: () => void /* callback function */;
+  saved: BITMAP /* saved what was underneath it */;
+  mouse_button_was_pressed: number /* set if mouse button pressed on last iteration */;
+  back_from_child: number /* set if a child was activated on last iteration */;
+  timestamp: number /* timestamp for gui_timer events */;
+  mouse_sel: number /* item the mouse is currently over */;
+  redraw: number /* set if redrawing is required */;
+  auto_open: number /* set if menu auto-opening is activated */;
+  ret: number /* return value */;
+  dialog: DIALOG /* d_menu_proc() parent dialog (if any) */;
+  parent: MENU_PLAYER /* the parent menu, or NULL for root */;
+  child: MENU_PLAYER /* the child menu, or NULL for none */;
+};
 
 /// 1.2.27 Font object
 /// This is not a function but a reference entry for font object returned by load_font() and create_cont().
@@ -251,7 +280,7 @@ export type FONT = {
 };
 
 /// 1.2.28
-export type ZBUFFER = {};
+export type ZBUFFER = BITMAP;
 
 /// 1.2.29 Sample object
 /// This is not a function. This is a sample object structure returned by load_sample().
@@ -269,7 +298,13 @@ export type SAMPLE = {
 };
 
 /// 1.2.30
-export type MIDI = {};
+export type MIDI = {
+  divisions: number;
+  track: {
+    len: number;
+    data: number;
+  }[];
+};
 
 /// 1.2.31
 export type AUDIOSTREAM = {
@@ -277,15 +312,61 @@ export type AUDIOSTREAM = {
 };
 
 /// 1.2.32
-export type PACKFILE = {};
+export type PACKFILE = {
+  vtable: PACKFILE_VTABLE;
+  userdata: () => void;
+  is_normal_packfile: boolean;
+  normal?: {
+    hndl: number;
+    flags: number;
+    buf_pos: number;
+    buf_size: number;
+    todo: number;
+    parent: PACKFILE;
+    pack_data: LZSS_PACK_DATA;
+    unpack_data: LZSS_UNPACK_DATA;
+    filename: string;
+    passdata: string;
+    passpos: string;
+    buff: string;
+  };
+};
 
 /// 1.2.33
-export type PACKFILE_VTABLE = {};
+export type PACKFILE_VTABLE = {
+  userdata: string;
+};
 
 /// 1.2.34
-export type LZSS_PACK_DATE = {};
+export type LZSS_PACK_DATA = {
+  state: number;
+  i: number;
+  c: number;
+  len: number;
+  r: number;
+  s: number;
+  last_match_length: number;
+  code_buf_ptr: number;
+  mask: number;
+  code_buf: string;
+  match_position: number;
+  match_length: number;
+  lson: number[];
+  rson: number[];
+  dad: number[];
+  text_buf: string;
+};
 
 /// 1.2.35
-export type LZSS_UNPACK_DATA = {};
+export type LZSS_UNPACK_DATA = {
+  state: number;
+  i: number;
+  j: number;
+  k: number;
+  r: number;
+  c: number;
+  flags: number;
+  text_buf: string;
+};
 
 //@}

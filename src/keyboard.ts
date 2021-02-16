@@ -20,8 +20,6 @@ export function install_keyboard(enable_keys?: number[]) {
   }
   for (let c = 0; c < 0x80; c += 1) {
     key[c] = false;
-    pressed[c] = false;
-    released[c] = false;
   }
   document.addEventListener("keyup", _keyup);
   document.addEventListener("keydown", _keydown);
@@ -47,7 +45,10 @@ export function remove_keyboard() {
 export function install_keyboard_hooks(
   keypressed: () => void,
   readkey: () => void
-) {}
+) {
+  void keypressed;
+  void readkey;
+}
 
 /// 1.7.4
 export function poll_keyboard(): number {
@@ -76,7 +77,7 @@ export const key: boolean[] = [];
 export const key_buffer: number[] = [];
 
 /// 1.7.7
-export const key_shifts: number = 0;
+export const key_shifts = 0;
 
 /// 1.7.8
 export function keypressed(): boolean {
@@ -84,10 +85,10 @@ export function keypressed(): boolean {
 }
 
 /// 1.7.9
-export function readkey(): number {
+export async function readkey(): Promise<number> {
   while (key_buffer.length === 0) {
-    rest(1);
-    _keyboard_loop();
+    // eslint-disable-next-line no-await-in-loop
+    await rest(10);
   }
   const top = key_buffer.pop();
   if (typeof top === "number") {
@@ -98,6 +99,7 @@ export function readkey(): number {
 
 /// 1.7.10
 export function ureadkey(scancode: number): number {
+  void scancode;
   return 0;
 }
 
@@ -112,28 +114,47 @@ export function scancode_to_name(scancode: number) {
 }
 
 /// 1.7.13
-export function simulate_keypress(key: number) {}
+export function simulate_keypress(key: number) {
+  _keydown_handler(key);
+}
 
 /// 1.7.14
-export function simulate_ukeypress(key: number, scancode: number) {}
+export function simulate_ukeypress(key: number, scancode: number) {
+  void scancode;
+  _keydown_handler(key);
+}
 
 /// 1.7.15
-export function keyboard_callback(key: number) {}
+export function keyboard_callback(key: number) {
+  void key;
+}
 
 /// 1.7.16
-export function keyboard_ucallback(key: number, scancode: number) {}
+export function keyboard_ucallback(key: number, scancode: number) {
+  void key;
+  void scancode;
+}
 
 /// 1.7.17
-export function keyboard_lowlevel_callback(key: number) {}
+export function keyboard_lowlevel_callback(key: number) {
+  void key;
+}
 
 /// 1.7.18
-export function set_leds(leds: number) {}
+export function set_leds(leds: number) {
+  void leds;
+}
 
 /// 1.7.19
-export function set_keyboard_rate(delay: number, repeat: number) {}
+export function set_keyboard_rate(delay: number, repeat: number) {
+  void delay;
+  void repeat;
+}
 
 /// 1.7.20
-export function clear_keybuf() {}
+export function clear_keybuf() {
+  key_buffer.length = 0;
+}
 
 /// 1.7.21
 export const three_finger_flag = false;
@@ -247,14 +268,6 @@ export const KEY_0 = 0x30,
   KEY_Y = 0x59,
   KEY_Z = 0x5a;
 
-/// Array of flags indicating in a key was just pressed since last loop()
-/// Note that this will only work inside loop()
-export const pressed: boolean[] = [];
-
-/// Array of flags indicating in a key was just released since last loop()
-/// Note that this will only work inside loop()
-export const released: boolean[] = [];
-
 /// Is keyboard even installed
 export let _keyboard_installed = false;
 
@@ -281,27 +294,28 @@ let _enabled_keys: number[] = [];
 export function _keyboard_loop() {
   if (_keyboard_installed) {
     key_buffer.length = 0;
-    for (let c = 0; c < 0x80; c += 1) {
-      pressed[c] = false;
-      released[c] = false;
-    }
   }
 }
 
 /// key down event handler
-export function _keydown(e: KeyboardEvent) {
-  const code = key[e.keyCode];
-  if (typeof code !== "undefined" && !code) pressed[e.keyCode] = true;
-  key[e.keyCode] = true;
-  key_buffer.push(e.keyCode << 8);
+function _keydown(e: KeyboardEvent) {
+  _keydown_handler(e.keyCode);
   if (!_enabled_keys.includes(e.keyCode)) e.preventDefault();
 }
 
+function _keydown_handler(keyCode: number) {
+  key[keyCode] = true;
+  key_buffer.push(keyCode << 8);
+}
+
 /// key up event handler
-export function _keyup(e: KeyboardEvent) {
-  key[e.keyCode] = false;
-  released[e.keyCode] = true;
+function _keyup(e: KeyboardEvent) {
+  _keyup_handler(e.keyCode);
   if (!_enabled_keys.includes(e.keyCode)) e.preventDefault();
+}
+
+function _keyup_handler(keyCode: number) {
+  key[keyCode] = false;
 }
 
 //@}

@@ -15,7 +15,7 @@ import {
 
 enable_debug("debug");
 
-function main() {
+async function main() {
   // Initialising allegro.js
   allegro_init();
 

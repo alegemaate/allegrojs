@@ -18,12 +18,12 @@ export function makecol24(r: number, g: number, b: number) {
 }
 
 export function makecol32(r: number, g: number, b: number) {
-  return makeacol32(r, g, b, 255);
+  return (r << 0) | (g << 8) | (b << 16);
 }
 
 /// 1.13.2
 export function makeacol32(r: number, g: number, b: number, a: number) {
-  return r | (g << 8) | (b << 16) | (a << 24);
+  return (r << 0) | (g << 8) | (b << 16) | (a << 24);
 }
 
 /// 1.13.3 Creates a 0xAARRGGBB from values
@@ -55,8 +55,9 @@ export function makecol_depth(
       return makecol24(r, g, b);
     case 32:
       return makecol32(r, g, b);
+    default:
+      return 0;
   }
-  return 0;
 }
 
 export function makeacol_depth(
@@ -77,8 +78,9 @@ export function makeacol_depth(
       return makecol24(r, g, b);
     case 32:
       return makeacol32(r, g, b, a);
+    default:
+      return 0;
   }
-  return 0;
 }
 
 /// 1.13.5
@@ -100,7 +102,9 @@ export function makecol15_dither(
   x: number,
   y: number
 ) {
-  return (255 << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
+  void x;
+  void y;
+  return makecol32(r, g, b);
 }
 
 /// 1.13.7
@@ -122,7 +126,7 @@ export function getr24(c: number) {
 }
 
 export function getr32(c: number) {
-  return c & 0xff;
+  return (c >> 0) & 0xff;
 }
 
 // Green
@@ -217,8 +221,9 @@ export function getr_depth(color_depth: number, c: number) {
       return getr24(c);
     case 32:
       return getr32(c);
+    default:
+      return 0;
   }
-  return 0;
 }
 
 export function getg_depth(color_depth: number, c: number) {
@@ -233,8 +238,9 @@ export function getg_depth(color_depth: number, c: number) {
       return getg24(c);
     case 32:
       return getg32(c);
+    default:
+      return 0;
   }
-  return 0;
 }
 
 export function getb_depth(color_depth: number, c: number) {
@@ -249,11 +255,12 @@ export function getb_depth(color_depth: number, c: number) {
       return getb24(c);
     case 32:
       return getb32(c);
+    default:
+      return 0;
   }
-  return 0;
 }
 
 export function geta_depth(color_depth: number, c: number) {
-  if (color_depth == 32) return geta32(c);
+  if (color_depth === 32) return geta32(c);
   return 0;
 }

@@ -27,11 +27,13 @@ import {
   allegro_error,
   ready,
   enable_debug,
+  readkey,
+  set_palette,
 } from "../src/allegro.js";
 
 enable_debug("debug");
 
-function main() {
+async function main() {
   let argv = ["", "data/man.png"];
   let the_image!: BITMAP;
   let the_palette!: PALETTE;
@@ -56,27 +58,27 @@ function main() {
     return 1;
   }
 
-  ready(() => {
-    /* select the bitmap palette */
-    // set_palette(the_palette);
+  await ready();
 
-    /* blit the image onto the screen */
-    blit(
-      the_image,
-      screen,
-      0,
-      0,
-      (SCREEN_W - the_image.w) / 2,
-      (SCREEN_H - the_image.h) / 2,
-      the_image.w,
-      the_image.h
-    );
+  /* select the bitmap palette */
+  set_palette(the_palette);
 
-    /* destroy the bitmap */
-    destroy_bitmap(the_image);
+  /* blit the image onto the screen */
+  blit(
+    the_image,
+    screen,
+    0,
+    0,
+    (SCREEN_W - the_image.w) / 2,
+    (SCREEN_H - the_image.h) / 2,
+    the_image.w,
+    the_image.h
+  );
 
-    // readkey();
-  });
+  /* destroy the bitmap */
+  destroy_bitmap(the_image);
+
+  await readkey();
 
   return 0;
 }

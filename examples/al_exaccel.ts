@@ -45,13 +45,14 @@ import {
   GFX_HW_FILL,
   gfx_capabilities,
   GFX_HW_VRAM_BLIT,
-  loop,
   makecol,
   enable_debug,
   ready,
   GFX_AUTODETECT,
   GFX_TEXT,
   allegro_error,
+  rest,
+  set_palette,
 } from "../src/allegro.js";
 
 enable_debug("debug");
@@ -86,7 +87,7 @@ function update_image(image: IMAGE) {
     image.dy *= -1;
 }
 
-function main() {
+async function main() {
   const buf = "data/mysha.png";
   let pal: RGB = { r: 0, b: 0, g: 0 };
   let image: BITMAP;
@@ -120,146 +121,145 @@ function main() {
     return 1;
   }
 
-  ready(() => {
-    // set_palette(pal);
+  await ready();
 
-    /* initialise the images to random positions */
-    for (i = 0; i < MAX_IMAGES; i++) {
-      const new_image: IMAGE = { x: 0, y: 0, dx: 0, dy: 0 };
-      init_image(new_image);
-      images.push(new_image);
-    }
+  set_palette(pal);
 
-    /* create two video memory bitmaps for page flipping */
-    page[0] = create_video_bitmap(SCREEN_W, SCREEN_H);
-    page[1] = create_video_bitmap(SCREEN_W, SCREEN_H);
+  /* initialise the images to random positions */
+  for (i = 0; i < MAX_IMAGES; i++) {
+    const new_image: IMAGE = { x: 0, y: 0, dx: 0, dy: 0 };
+    init_image(new_image);
+    images.push(new_image);
+  }
 
-    /* create a video memory bitmap to store our picture */
-    vimage = create_video_bitmap(image.w, image.h);
+  /* create two video memory bitmaps for page flipping */
+  page[0] = create_video_bitmap(SCREEN_W, SCREEN_H);
+  page[1] = create_video_bitmap(SCREEN_W, SCREEN_H);
 
-    if (!page[0] || !page[1] || !vimage) {
-      set_gfx_mode("", GFX_TEXT, 0, 0, 0, 0);
-      allegro_message(
-        "Not enough video memory (need two 1024x768 pages and a 320x200 image)\n"
+  /* create a video memory bitmap to store our picture */
+  vimage = create_video_bitmap(image.w, image.h);
+
+  if (!page[0] || !page[1] || !vimage) {
+    set_gfx_mode("", GFX_TEXT, 0, 0, 0, 0);
+    allegro_message(
+      "Not enough video memory (need two 1024x768 pages and a 320x200 image)\n"
+    );
+    return 1;
+  }
+
+  /* copy the picture into offscreen video memory */
+  blit(image, vimage, 0, 0, 0, 0, image.w, image.h);
+
+  while (!done) {
+    acquire_bitmap(page[page_num]);
+
+    /* clear the screen */
+    clear_bitmap(page[page_num]);
+
+    /* draw onto it */
+    for (i = 0; i < num_images; i++) {
+      blit(
+        vimage,
+        page[page_num],
+        0,
+        0,
+        images[i]?.x ?? 0,
+        images[i]?.y ?? 0,
+        vimage.w,
+        vimage.h
       );
-      return 1;
     }
 
-    /* copy the picture into offscreen video memory */
-    blit(image, vimage, 0, 0, 0, 0, image.w, image.h);
+    textprintf_ex(
+      page[page_num],
+      font,
+      0,
+      0,
+      255,
+      -1,
+      "Images: %d (arrow keys to change)",
+      num_images
+    );
 
-    loop(() => {
-      acquire_bitmap(page[page_num]);
-
-      /* clear the screen */
-      clear_bitmap(page[page_num]);
-
-      /* draw onto it */
-      for (i = 0; i < num_images; i++) {
-        blit(
-          vimage,
-          page[page_num],
-          0,
-          0,
-          images[i]?.x ?? 0,
-          images[i]?.y ?? 0,
-          vimage.w,
-          vimage.h
-        );
-      }
-
-      textprintf_ex(
+    /* tell the user which functions are being done in hardware */
+    if (gfx_capabilities & GFX_HW_FILL)
+      textout_ex(
         page[page_num],
         font,
+        "Clear: hardware accelerated",
         0,
+        16,
+        makecol(255, 255, 255),
+        -1
+      );
+    else
+      textout_ex(
+        page[page_num],
+        font,
+        "Clear: software (urgh, this is not good!)",
         0,
-        255,
-        -1,
-        "Images: %d (arrow keys to change)",
-        num_images
+        16,
+        makecol(255, 255, 255),
+        -1
       );
 
-      /* tell the user which functions are being done in hardware */
-      if (gfx_capabilities & GFX_HW_FILL)
-        textout_ex(
-          page[page_num],
-          font,
-          "Clear: hardware accelerated",
-          0,
-          16,
-          makecol(255, 255, 255),
-          -1
-        );
-      else
-        textout_ex(
-          page[page_num],
-          font,
-          "Clear: software (urgh, this is not good!)",
-          0,
-          16,
-          makecol(255, 255, 255),
-          -1
-        );
+    if (gfx_capabilities & GFX_HW_VRAM_BLIT)
+      textout_ex(
+        page[page_num],
+        font,
+        "Blit: hardware accelerated",
+        0,
+        32,
+        makecol(255, 255, 255),
+        -1
+      );
+    else
+      textout_ex(
+        page[page_num],
+        font,
+        "Blit: software (urgh, this program will run too sloooooowly without hardware acceleration!)",
+        0,
+        32,
+        makecol(255, 255, 255),
+        -1
+      );
 
-      if (gfx_capabilities & GFX_HW_VRAM_BLIT)
-        textout_ex(
-          page[page_num],
-          font,
-          "Blit: hardware accelerated",
-          0,
-          32,
-          makecol(255, 255, 255),
-          -1
-        );
-      else
-        textout_ex(
-          page[page_num],
-          font,
-          "Blit: software (urgh, this program will run too sloooooowly without hardware acceleration!)",
-          0,
-          32,
-          makecol(255, 255, 255),
-          -1
-        );
+    release_bitmap(page[page_num]);
 
-      release_bitmap(page[page_num]);
+    /* page flip */
+    show_video_bitmap(page[page_num]);
+    page_num = 1 - page_num;
 
-      /* page flip */
-      show_video_bitmap(page[page_num]);
-      page_num = 1 - page_num;
+    /* deal with keyboard input */
+    while (keypressed()) {
+      const val = (await readkey()) >> 8;
+      switch (val) {
+        case KEY_UP:
+        case KEY_RIGHT:
+          if (num_images < MAX_IMAGES) num_images++;
+          break;
 
-      /* deal with keyboard input */
-      while (keypressed()) {
-        switch (readkey() >> 8) {
-          case KEY_UP:
-          case KEY_RIGHT:
-            if (num_images < MAX_IMAGES) num_images++;
-            break;
+        case KEY_DOWN:
+        case KEY_LEFT:
+          if (num_images > 0) num_images--;
+          break;
 
-          case KEY_DOWN:
-          case KEY_LEFT:
-            if (num_images > 0) num_images--;
-            break;
-
-          case KEY_ESC:
-            done = true;
-            break;
-        }
+        case KEY_ESC:
+          done = true;
+          break;
       }
+    }
 
-      /* bounce the images around the screen */
-      images.forEach((image) => update_image(image));
+    /* bounce the images around the screen */
+    images.forEach((image) => update_image(image));
 
-      return 0;
-    }, 16.6);
+    await rest(16);
+  }
 
-    destroy_bitmap(image);
-    destroy_bitmap(vimage);
-    destroy_bitmap(page[0]);
-    destroy_bitmap(page[1]);
-
-    return 0;
-  });
+  destroy_bitmap(image);
+  destroy_bitmap(vimage);
+  destroy_bitmap(page[0]);
+  destroy_bitmap(page[1]);
 
   return 0;
 }

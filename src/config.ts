@@ -2,8 +2,14 @@
 /// @name CONFIGURATION ROUTINES
 //@{
 
+import { makecol } from "./color.js";
+import { _uberloop } from "./core.js";
 import { log } from "./debug.js";
+import { textprintf_centre_ex } from "./font.js";
+import { font, SCREEN_H, SCREEN_W } from "./graphics.js";
+import { clear_to_color } from "./primitives.js";
 import { vsprintf } from "./sprintf.js";
+import { screen } from "./bitmap.js";
 
 /// 1.1.1 Installs allegro.
 /// This function must be called before anything else.
@@ -12,7 +18,12 @@ export function install_allegro(
   errno_ptr: number,
   atexit_ptr: () => void
 ) {
+  void system_id;
+  void errno_ptr;
+  void atexit_ptr;
   log("Allegro installed!");
+  window.setInterval(_uberloop, 16.6);
+  log("Game loop initialised!");
 }
 
 /// 1.1.2 Wrapper for install_allegro.
@@ -28,15 +39,32 @@ export function allegro_exit() {
 
 /// 1.1.4 Macro to be placed after the end of main()
 /// Calls main()
-export function END_OF_MAIN(main: () => void) {
-  window.addEventListener("load", main);
+export function END_OF_MAIN(main: () => Promise<number>) {
+  window.addEventListener("load", () => {
+    void boot(main);
+  });
+}
+
+async function boot(main: () => Promise<number>) {
+  const code = await main();
+  clear_to_color(screen, makecol(100, 100, 100));
+  textprintf_centre_ex(
+    screen,
+    font,
+    SCREEN_W / 2,
+    SCREEN_H / 2,
+    makecol(255, 255, 255),
+    -1,
+    "Program ended with code %i",
+    code
+  );
 }
 
 /// 1.1.5
-export const allegro_id: string = "Allegro TS";
+export const allegro_id = "Allegro TS";
 
 /// 1.1.6
-export const allegro_error: string = "";
+export const allegro_error = "";
 
 /// 1.1.7
 export const ALLEGRO_VERSION = 4;
@@ -78,8 +106,9 @@ export const os_multitasking = true;
 /// 1.1.18
 export function allegro_message(
   text_format: string,
-  ...args: (string | number)[]
+  ...args: (number | string)[]
 ) {
+  // eslint-disable-next-line no-alert
   alert(vsprintf(text_format, args));
 }
 

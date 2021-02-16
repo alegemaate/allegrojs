@@ -18,7 +18,9 @@ export function install_timer(): number {
 }
 
 /// 1.6.2
-export function remove_timer() {}
+export function remove_timer() {
+  // NOOP
+}
 
 /// 1.6.3 Installs interrupt function.
 /// Installs a user timer handler, with the speed given as the number of milliseconds between ticks. This is the same thing as install_int_ex(proc, MSEC_TO_TIMER(speed)). Calling again this routine with the same timer handler as parameter allows you to adjust its speed.
@@ -43,7 +45,7 @@ export function install_int_ex(proc: () => void, speed: number) {
 }
 
 /// 1.6.5
-export function LOCK_VARIABLE(variable_name: string | number) {
+export function LOCK_VARIABLE(variable_name: number | string) {
   void variable_name;
 }
 
@@ -83,26 +85,31 @@ export function install_param_int_ex(
   procedure: () => void,
   param: string,
   speed: number
-) {}
+) {
+  void procedure;
+  void param;
+  void speed;
+}
 
 /// 1.6.11
-export function remove_param_int(proc: () => void, param: string) {}
+export function remove_param_int(proc: () => void, param: string) {
+  void proc;
+  void param;
+}
 
 /// 1.6.12
-export const retrace_count: number = 0;
+export const retrace_count = 0;
 
 /// 1.6.13
-export function rest(time: number) {
-  const date = Date.now();
-  let currentDate = null;
-  do {
-    currentDate = Date.now();
-  } while (currentDate - date < time);
+export async function rest(time: number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, time);
+  });
 }
 
 /// 1.6.13
 export function rest_callback(time: number, callback: () => void) {
-  //sleep
+  setTimeout(callback, time);
 }
 
 /// looks up a timer by it's function on the list
@@ -140,13 +147,7 @@ export function BPM_TO_TIMER(bpm: number) {
 
 /// INTERNAL
 
-/// Unix time stamp!
-/// Returns number of milliseconds since 1970 started.
-export function time() {
-  return Date.now();
-}
-
 /// holds all currently installed timers
-let _installed_timers: TIMER[] = [];
+const _installed_timers: TIMER[] = [];
 
 //@}

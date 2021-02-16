@@ -7,7 +7,8 @@ let _debug_element: HTMLElement | null = null;
 
 /// Set this to true if you want to debug to browser console.
 /// Setting this will make log() log to browser debugger console using console.log().
-const ALLEGRO_CONSOLE = true;
+// eslint-disable-next-line prefer-const
+let ALLEGRO_CONSOLE = true;
 
 /// Fatal error displays alert and logs to console
 export function _error(string: string) {

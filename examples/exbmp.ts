@@ -7,14 +7,14 @@ import {
   SCREEN_H,
   SCREEN_W,
   END_OF_MAIN,
-  loop,
   enable_debug,
+  ready,
 } from "../src/allegro.js";
 
 enable_debug("debug");
 
 // Globally declared bitmap object
-function main() {
+async function main() {
   // Initialises allegro.js
   allegro_init();
 
@@ -26,10 +26,10 @@ function main() {
 
   // the following function will get called as soon
   // as the image finishes loading
-  loop(() => {
-    // renders the loaded image on the screen
-    stretch_blit(logo, screen, 0, 0, logo.w, logo.h, 0, 0, SCREEN_W, SCREEN_H);
-  }, 100);
+  await ready();
+
+  // renders the loaded image on the screen
+  stretch_blit(logo, screen, 0, 0, logo.w, logo.h, 0, 0, SCREEN_W, SCREEN_H);
 
   return 0;
 }

@@ -4,13 +4,13 @@
 
 import { getr, getg, getb, geta } from "./color.js";
 import { PI2, RAD } from "./math.js";
-import { BITMAP, ALLEGRO_CANVAS } from "./types.js";
+import { BITMAP } from "./types.js";
 
 /// 1.14.1
 /// Clears bitmap to transparent black.
 /// Fills the entire bitmap with 0 value, which represents transparent black.
 /// @param bitmap bitmap to be cleared
-export function clear_bitmap(bitmap: BITMAP | ALLEGRO_CANVAS | undefined) {
+export function clear_bitmap(bitmap: BITMAP | undefined) {
   clear_to_color(bitmap, 0xff000000);
 }
 
@@ -19,10 +19,7 @@ export function clear_bitmap(bitmap: BITMAP | ALLEGRO_CANVAS | undefined) {
 /// Fills the entire bitmap with colour value.
 /// @param bitmap bitmap to be cleared
 /// @param colour colour in 0xAARRGGBB format
-export function clear_to_color(
-  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
-  colour: number
-) {
+export function clear_to_color(bitmap: BITMAP | undefined, colour: number) {
   if (!bitmap) {
     return;
   }
@@ -38,7 +35,7 @@ export function clear_to_color(
 /// @param y y coordinate of pixel
 /// @param colour colour in 0xAARRGGBB format
 export function putpixel(
-  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
+  bmp: BITMAP | undefined,
   x: number,
   y: number,
   c: number
@@ -52,7 +49,7 @@ export function putpixel(
 
 /// 1.14.4
 export function _putpixel(
-  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
+  bmp: BITMAP | undefined,
   x: number,
   y: number,
   c: number
@@ -61,7 +58,7 @@ export function _putpixel(
 }
 
 export function _putpixel15(
-  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
+  bmp: BITMAP | undefined,
   x: number,
   y: number,
   c: number
@@ -70,7 +67,7 @@ export function _putpixel15(
 }
 
 export function _putpixel16(
-  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
+  bmp: BITMAP | undefined,
   x: number,
   y: number,
   c: number
@@ -79,7 +76,7 @@ export function _putpixel16(
 }
 
 export function _putpixel24(
-  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
+  bmp: BITMAP | undefined,
   x: number,
   y: number,
   c: number
@@ -88,7 +85,7 @@ export function _putpixel24(
 }
 
 export function _putpixel32(
-  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
+  bmp: BITMAP | undefined,
   x: number,
   y: number,
   c: number
@@ -102,13 +99,9 @@ export function _putpixel32(
 /// @param x x coordinate of pixel
 /// @param y y coordinate of pixel
 /// @return colour in 0xAARRGGBB format
-export function getpixel(
-  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
-  x: number,
-  y: number
-) {
-  if (!bmp) {
-    return;
+export function getpixel(bmp: BITMAP | undefined, x: number, y: number) {
+  if (!bmp || x < 0 || y < 0 || x >= bmp.w || y >= bmp.h) {
+    return -1;
   }
   const { data } = bmp.context.getImageData(x, y, 1, 1);
 
@@ -120,43 +113,23 @@ export function getpixel(
   );
 }
 
-export function _getpixel(
-  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
-  x: number,
-  y: number
-) {
+export function _getpixel(bmp: BITMAP | undefined, x: number, y: number) {
   return getpixel(bmp, x, y);
 }
 
-export function _getpixel15(
-  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
-  x: number,
-  y: number
-) {
+export function _getpixel15(bmp: BITMAP | undefined, x: number, y: number) {
   return getpixel(bmp, x, y);
 }
 
-export function _getpixel16(
-  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
-  x: number,
-  y: number
-) {
+export function _getpixel16(bmp: BITMAP | undefined, x: number, y: number) {
   return getpixel(bmp, x, y);
 }
 
-export function _getpixel24(
-  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
-  x: number,
-  y: number
-) {
+export function _getpixel24(bmp: BITMAP | undefined, x: number, y: number) {
   return getpixel(bmp, x, y);
 }
 
-export function _getpixel32(
-  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
-  x: number,
-  y: number
-) {
+export function _getpixel32(bmp: BITMAP | undefined, x: number, y: number) {
   return getpixel(bmp, x, y);
 }
 
@@ -168,7 +141,7 @@ export function _getpixel32(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width (defaults to 1)
 export function vline(
-  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  bitmap: BITMAP | undefined,
   x: number,
   y1: number,
   y2: number,
@@ -190,7 +163,7 @@ export function vline(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width (defaults to 1)
 export function hline(
-  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  bitmap: BITMAP | undefined,
   x1: number,
   y: number,
   x2: number,
@@ -206,13 +179,22 @@ export function hline(
 
 /// 1.14.9
 export function do_line(
-  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  bitmap: BITMAP | undefined,
   x1: number,
-  y: number,
+  y1: number,
   x2: number,
-  width = 1,
+  y2: number,
+  d: number,
   proc: (bmp: BITMAP, x: number, y: number, d: number) => void
-) {}
+) {
+  void bitmap;
+  void x1;
+  void y1;
+  void x2;
+  void y2;
+  void d;
+  void proc;
+}
 
 /// 1.14.10 Draws a line.
 /// Draws a line from one point to another using given colour.
@@ -222,7 +204,7 @@ export function do_line(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width
 export function line(
-  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  bitmap: BITMAP | undefined,
   x1: number,
   y1: number,
   x2: number,
@@ -232,7 +214,7 @@ export function line(
   if (!bitmap) {
     return;
   }
-  _strokestyle(bitmap, colour, 1);
+  _strokestyle(bitmap, colour);
   bitmap.context.beginPath();
   bitmap.context.moveTo(x1, y1);
   bitmap.context.lineTo(x2, y2);
@@ -241,7 +223,7 @@ export function line(
 
 /// 1.14.11
 export function fastline(
-  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  bitmap: BITMAP | undefined,
   x1: number,
   y1: number,
   x2: number,
@@ -260,7 +242,7 @@ export function fastline(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width
 export function triangle(
-  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  bitmap: BITMAP | undefined,
   x1: number,
   y1: number,
   x2: number,
@@ -289,7 +271,7 @@ export function triangle(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width
 export function polygon(
-  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  bitmap: BITMAP | undefined,
   vertices: number,
   points: number[],
   colour: number
@@ -315,7 +297,7 @@ export function polygon(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width
 export function rect(
-  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  bitmap: BITMAP | undefined,
   x1: number,
   y1: number,
   w: number,
@@ -337,7 +319,7 @@ export function rect(
 /// @param w,h width and height
 /// @param colour colour in 0xAARRGGBB format
 export function rectfill(
-  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  bitmap: BITMAP | undefined,
   x1: number,
   y1: number,
   w: number,
@@ -359,7 +341,14 @@ export function do_circle(
   radius: number,
   d: number,
   proc: (bmp: BITMAP, x: number, y: number, d: number) => void
-) {}
+) {
+  void bmp;
+  void x;
+  void y;
+  void radius;
+  void d;
+  void proc;
+}
 
 /// 1.14.17 Draws a circle.
 /// Draws a circle at specified centre point and radius. The circle is not filled
@@ -369,17 +358,16 @@ export function do_circle(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width
 export function circle(
-  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  bitmap: BITMAP | undefined,
   x: number,
   y: number,
   radius: number,
-  colour: number,
-  width: number
+  colour: number
 ) {
   if (!bitmap) {
     return;
   }
-  _strokestyle(bitmap, colour, width);
+  _strokestyle(bitmap, colour);
   bitmap.context.beginPath();
   bitmap.context.arc(x, y, radius, 0, PI2);
   bitmap.context.stroke();
@@ -392,7 +380,7 @@ export function circle(
 /// @param r circle radius
 /// @param colour colour in 0xAARRGGBB format
 export function circlefill(
-  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  bitmap: BITMAP | undefined,
   x: number,
   y: number,
   radius: number,
@@ -409,14 +397,22 @@ export function circlefill(
 
 /// 1.14.19
 export function do_ellipse(
-  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  bitmap: BITMAP | undefined,
   x: number,
   y: number,
   rx: number,
   ry: number,
   d: number,
   proc: (bmp: BITMAP, x: number, y: number, d: number) => void
-) {}
+) {
+  void bitmap;
+  void x;
+  void y;
+  void rx;
+  void ry;
+  void d;
+  void proc;
+}
 
 /// 1.14.20
 
@@ -428,7 +424,7 @@ export function do_ellipse(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width
 export function ellipse(
-  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  bitmap: BITMAP | undefined,
   x: number,
   y: number,
   rx: number,
@@ -456,7 +452,7 @@ export function ellipse(
 /// @param rx,ry ellipse radius in x and y
 /// @param colour colour in 0xAARRGGBB format
 export function ellipsefill(
-  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  bitmap: BITMAP | undefined,
   x: number,
   y: number,
   rx: number,
@@ -478,7 +474,7 @@ export function ellipsefill(
 
 /// 1.14.22
 export function do_arc(
-  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  bitmap: BITMAP | undefined,
   x: number,
   y: number,
   ang1: number,
@@ -486,7 +482,16 @@ export function do_arc(
   r: number,
   d: number,
   proc: (bmp: BITMAP, x: number, y: number, d: number) => void
-) {}
+) {
+  void bitmap;
+  void x;
+  void y;
+  void ang1;
+  void ang2;
+  void r;
+  void d;
+  void proc;
+}
 
 /// 1.14.23 Draws a arc.
 /// Draws a circle at specified centre point and radius. The arc is not filled
@@ -497,7 +502,7 @@ export function do_arc(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width
 export function arc(
-  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  bitmap: BITMAP | undefined,
   x: number,
   y: number,
   ang1: number,
@@ -524,14 +529,23 @@ export function calc_spline(
   npts: number,
   x: number,
   y: number
-) {}
+) {
+  void points;
+  void npts;
+  void x;
+  void y;
+}
 
 /// 1.14.25
 export function spline(
   bmp: BITMAP | undefined,
   points: number[],
   color: number
-) {}
+) {
+  void bmp;
+  void points;
+  void color;
+}
 
 /// 1.14.26
 export function floodfill(
@@ -539,14 +553,16 @@ export function floodfill(
   x: number,
   y: number,
   color: number
-) {}
+) {
+  void bmp;
+  void x;
+  void y;
+  void color;
+}
 
 /// INTERNAL
 /// Helper for setting fill style
-export function _fillstyle(
-  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
-  colour: number
-) {
+export function _fillstyle(bitmap: BITMAP | undefined, colour: number) {
   if (!bitmap) {
     return;
   }
@@ -558,13 +574,13 @@ export function _fillstyle(
     "," +
     getb(colour) +
     "," +
-    geta(colour) / 255 +
+    (255 - geta(colour)) / 255 +
     ")";
 }
 
 /// Helper for setting stroke style
 export function _strokestyle(
-  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  bitmap: BITMAP | undefined,
   colour: number,
   width = 1
 ) {

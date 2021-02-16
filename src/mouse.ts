@@ -5,15 +5,48 @@
 import { log, _allog, _error } from "./debug.js";
 import { screen } from "./bitmap.js";
 import { BITMAP } from "./types.js";
+import { draw_sprite } from "./sprites.js";
 
 /// Types
-export type CURSOR_TYPES =
-  | "MOUSE_CURSOR_NONE"
+type CURSOR_TYPES =
   | "MOUSE_CURSOR_ALLEGRO"
   | "MOUSE_CURSOR_ARROW"
   | "MOUSE_CURSOR_BUSY"
-  | "MOUSE_CURSOR_QUESTION"
-  | "MOUSE_CURSOR_EDIT";
+  | "MOUSE_CURSOR_EDIT"
+  | "MOUSE_CURSOR_NONE"
+  | "MOUSE_CURSOR_QUESTION";
+
+type MOUSE_DRIVER = {
+  id: number;
+  name: string;
+  desc: string;
+  ascii_name: string;
+};
+
+const MOUSEDRV_AUTODETECT = -1;
+const MOUSEDRV_NONE = 0;
+
+export const mouse_driver: MOUSE_DRIVER = {
+  id: MOUSEDRV_NONE,
+  name: "",
+  desc: "",
+  ascii_name: "No mouse",
+};
+
+/// Cursors
+let _mouse_focus_x = 0;
+let _mouse_focus_y = 0;
+let _hardware_cursor = false;
+let _selected_cursor: CURSOR_TYPES = "MOUSE_CURSOR_ALLEGRO";
+
+const _cursors: Record<CURSOR_TYPES, BITMAP | null> = {
+  MOUSE_CURSOR_ALLEGRO: null,
+  MOUSE_CURSOR_ARROW: null,
+  MOUSE_CURSOR_BUSY: null,
+  MOUSE_CURSOR_EDIT: null,
+  MOUSE_CURSOR_NONE: null,
+  MOUSE_CURSOR_QUESTION: null,
+};
 
 /// 1.5.1 Installs mouse handlers.
 /// Must be called after set_gfx_mode() to be able to determine mouse position within the given canvas!
@@ -23,6 +56,12 @@ export function install_mouse(menu = false) {
     _allog("Mouse already installed");
     return -1;
   }
+
+  mouse_driver.id = MOUSEDRV_AUTODETECT;
+  mouse_driver.name = "Browser Mouse";
+  mouse_driver.desc = "Allegro Browser Handler";
+  mouse_driver.ascii_name = "Browser Mouse";
+
   screen.canvas.addEventListener("mouseup", _mouseup);
   screen.canvas.addEventListener("mousedown", _mousedown);
   screen.canvas.addEventListener("mousemove", _mousemove);
@@ -56,8 +95,8 @@ export function remove_mouse() {
 }
 
 /// 1.5.3
-export function poll_mouse(): number {
-  return 0;
+export function poll_mouse() {
+  _mouse_loop();
 }
 
 /// 1.5.4
@@ -66,18 +105,30 @@ export function mouse_needs_poll(): boolean {
 }
 
 /// 1.5.5
-export function enable_hardware_cursor() {}
+export function enable_hardware_cursor() {
+  _hardware_cursor = true;
+}
 
 /// 1.5.6
-export function disable_hardware_cursor() {}
+export function disable_hardware_cursor() {
+  _hardware_cursor = false;
+}
 
 /// 1.5.7
 export function select_mouse_cursor(cursor: CURSOR_TYPES) {
-  void cursor;
+  _selected_cursor = cursor;
+  if (_hardware_cursor) {
+    show_os_cursor(cursor);
+  }
 }
 
 /// 1.5.8
-export function set_mouse_cursor_bitmap(cursor: CURSOR_TYPES, bmp: BITMAP) {}
+export function set_mouse_cursor_bitmap(
+  cursor: CURSOR_TYPES,
+  bmp: BITMAP | null
+) {
+  _cursors[cursor] = bmp;
+}
 
 /// 1.5.9
 /// Mouse X position within the canvas.
@@ -89,6 +140,9 @@ export let mouse_y = -1;
 /// Mouse wheel position.
 /// This might not work consistently across all browsers!
 export let mouse_z = -1;
+
+/// Mouse fourth axis position.
+export const mouse_w = -1;
 
 /// Mouse button bitmask.
 /// Each bit in the mask represents a separate mouse button state. If right mouse button is down, mouse_b value would be 4, 00100 in binary. Each bit represents one mouse button. use something like if (mouse_b&1) to check for separate buttons.
@@ -102,12 +156,16 @@ export const mouse_sprite: BITMAP | null = null;
 
 /// 1.5.11
 /// Enables showing system mouse cursor over canvas
-export function show_mouse(bmp: BITMAP) {
+export function show_mouse(bmp: BITMAP | null) {
   if (!_mouse_installed) {
     _error("You must call install_mouse before show_mouse");
     return -1;
   }
-  screen.canvas.style.cursor = "auto";
+  if (bmp) {
+    screen.canvas.style.cursor = "auto";
+  } else {
+    screen.canvas.style.cursor = "none";
+  }
   return 0;
 }
 
@@ -124,19 +182,53 @@ export function scare_mouse() {
 }
 
 /// 1.5.13
-export function scare_mouse_area(x: number, y: number, w: number, h: number) {}
+export function scare_mouse_area(x: number, y: number, w: number, h: number) {
+  void x;
+  void y;
+  void w;
+  void h;
+}
 
 /// 1.5.15
-export function show_os_cursor(cursor: CURSOR_TYPES) {}
+export function show_os_cursor(cursor: CURSOR_TYPES) {
+  switch (cursor) {
+    case "MOUSE_CURSOR_ALLEGRO":
+      screen.canvas.style.cursor = "auto";
+      break;
+    case "MOUSE_CURSOR_ARROW":
+      screen.canvas.style.cursor = "move";
+      break;
+    case "MOUSE_CURSOR_BUSY":
+      screen.canvas.style.cursor = "wait";
+      break;
+    case "MOUSE_CURSOR_EDIT":
+      screen.canvas.style.cursor = "crosshair";
+      break;
+    case "MOUSE_CURSOR_NONE":
+      screen.canvas.style.cursor = "auto";
+      break;
+    case "MOUSE_CURSOR_QUESTION":
+      screen.canvas.style.cursor = "help";
+      break;
+    default:
+      screen.canvas.style.cursor = "auto";
+      break;
+  }
+}
 
 /// 1.5.16
-export let freeze_mouse_flag = false;
+export const freeze_mouse_flag = false;
 
 /// 1.5.17
-export function position_mouse(x: number, y: number) {}
+export function position_mouse(x: number, y: number) {
+  mouse_x = x;
+  mouse_y = y;
+}
 
 /// 1.5.18
-export function position_mouse_z(z: number) {}
+export function position_mouse_z(z: number) {
+  mouse_z = z;
+}
 
 /// 1.5.19
 export function set_mouse_range(
@@ -144,33 +236,46 @@ export function set_mouse_range(
   y1: number,
   x2: number,
   y2: number
-) {}
+) {
+  void x1;
+  void y1;
+  void x2;
+  void y2;
+  // NOOP
+}
 
 /// 1.5.20
-export function set_mouse_speed(xspeed: number, yspeed: number) {}
+export function set_mouse_speed(xspeed: number, yspeed: number) {
+  void xspeed;
+  void yspeed;
+  // NOOP
+}
 
 /// 1.5.21
-export function set_mouse_sprite(sprite: BITMAP) {}
+export function set_mouse_sprite(sprite: BITMAP | null) {
+  _cursors.MOUSE_CURSOR_ALLEGRO = sprite;
+}
 
 /// 1.5.22
-export function set_mouse_sprite_focus(x: number, y: number) {}
+export function set_mouse_sprite_focus(x: number, y: number) {
+  _mouse_focus_x = x;
+  _mouse_focus_y = y;
+}
 
 /// 1.5.23
-export function get_mouse_mikeys(mickeyx: number, mickeyy: number) {}
+export function get_mouse_mickeys(mickeyx: number, mickeyy: number) {
+  void mickeyx;
+  void mickeyy;
+  // NOOP
+}
 
 /// 1.5.24
-export function mouse_callback(flags: number) {}
+export function mouse_callback(flags: number) {
+  void flags;
+  // NOOP
+}
 
 /// INTERNAL
-
-/// Same as mouse_b but only checks if a button was pressed last frame
-/// Note that this only works inside loop()
-export let mouse_pressed = 0;
-
-/// Same as mouse_b but only checks if a button was released last frame
-/// Note that this only works inside loop()
-export let mouse_released = 0;
-
 /// Mouse mickey, X position since last loop().
 /// Only works inside loop()
 export let mouse_mx = 0;
@@ -213,14 +318,26 @@ export function _mouse_loop() {
 /// Mouse reset loop
 export function _mouse_loop_reset() {
   if (_mouse_installed) {
-    mouse_pressed = 0;
-    mouse_released = 0;
     mouse_mx = 0;
     mouse_my = 0;
     mouse_mz = 0;
     _last_mouse_x = mouse_x;
     _last_mouse_y = mouse_y;
     _last_mouse_z = mouse_z;
+
+    // Draw cursor
+    const cursor = _cursors[_selected_cursor];
+    if (cursor && !_hardware_cursor) {
+      draw_sprite(
+        screen,
+        cursor,
+        mouse_x + _mouse_focus_x,
+        mouse_y + _mouse_focus_y
+      );
+      screen.canvas.style.cursor = "none";
+    } else {
+      show_os_cursor(_selected_cursor);
+    }
   }
 }
 
@@ -231,15 +348,13 @@ export function _mousemenu(e: MouseEvent) {
 
 /// mouse up event handler
 export function _mouseup(e: MouseEvent) {
-  mouse_b &= ~(1 << (e.which - 1));
-  mouse_released |= 1 << (e.which - 1);
+  mouse_b &= ~(1 << e.button);
   e.preventDefault();
 }
 
 /// mouse down event handler
 export function _mousedown(e: MouseEvent) {
-  mouse_b |= 1 << (e.which - 1);
-  mouse_pressed |= 1 << (e.which - 1);
+  mouse_b |= 1 << e.button;
   e.preventDefault();
 }
 

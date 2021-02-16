@@ -3,7 +3,7 @@
 //@{
 
 import { RAD } from "./math.js";
-import { BITMAP, ALLEGRO_CANVAS } from "./types.js";
+import { BITMAP } from "./types.js";
 
 /// 1.15.1 Blit
 /// This is how you draw backgrounds and stuff. masked_ versions are omitted, since everything is 32-bit RGBA anyways. The source and dest parameters are swapped compared to draw_sprite for historical, 20 year old reasons that must stay the same no matter what.
@@ -15,8 +15,8 @@ import { BITMAP, ALLEGRO_CANVAS } from "./types.js";
 /// @todo make rotated versions of this
 /// @todo tell everyone that blitting to itself is slower than the other thing (requires copy?)
 export function blit(
-  source: BITMAP | undefined | ALLEGRO_CANVAS,
-  dest: BITMAP | undefined | ALLEGRO_CANVAS,
+  source: BITMAP | undefined,
+  dest: BITMAP | undefined,
   sx: number,
   sy: number,
   dx: number,
@@ -49,8 +49,8 @@ export function blit(
 /// @param dx,dy top-left bitmap corner coordinates in target bitmap
 /// @param dw,dh destination dimensions
 export function stretch_blit(
-  source: BITMAP | undefined | ALLEGRO_CANVAS,
-  dest: BITMAP | undefined | ALLEGRO_CANVAS,
+  source: BITMAP | undefined,
+  dest: BITMAP | undefined,
   sx: number,
   sy: number,
   sw: number,
@@ -76,7 +76,16 @@ export function masked_blit(
   dest_y: number,
   width: number,
   height: number
-) {}
+) {
+  void sprite;
+  void dest;
+  void source_x;
+  void source_y;
+  void dest_x;
+  void dest_y;
+  void width;
+  void height;
+}
 
 /// 1.15.4
 export function masked_stretch_blit(
@@ -90,7 +99,18 @@ export function masked_stretch_blit(
   dest_y: number,
   dest_w: number,
   dest_h: number
-) {}
+) {
+  void sprite;
+  void dest;
+  void source_x;
+  void source_y;
+  void source_w;
+  void source_h;
+  void dest_x;
+  void dest_y;
+  void dest_w;
+  void dest_h;
+}
 
 /// 1.15.5 Draws a sprite
 /// This is probably the fastest method to get images on screen. The image will be centered. Opposed to traditional allegro approach, sprite is drawn centered.
@@ -98,8 +118,8 @@ export function masked_stretch_blit(
 /// @param sprite sprite bitmap
 /// @param x,y coordinates of the top left corder of the image center
 export function draw_sprite(
-  bmp: BITMAP | undefined | ALLEGRO_CANVAS,
-  sprite: BITMAP | undefined | ALLEGRO_CANVAS,
+  bmp: BITMAP | undefined,
+  sprite: BITMAP | undefined,
   x: number,
   y: number
 ) {
@@ -117,8 +137,8 @@ export function draw_sprite(
 /// @param sx horizontal scale , 1.0 is unscaled
 /// @param sy vertical scale (defaults to sx)
 export function stretch_sprite(
-  bmp: BITMAP | undefined | ALLEGRO_CANVAS,
-  sprite: BITMAP | undefined | ALLEGRO_CANVAS,
+  bmp: BITMAP | undefined,
+  sprite: BITMAP | undefined,
   x: number,
   y: number,
   w: number,
@@ -138,8 +158,8 @@ export function stretch_sprite(
 
 /// 1.15.7
 export function draw_sprite_v_flip(
-  bmp: BITMAP | undefined | ALLEGRO_CANVAS,
-  sprite: BITMAP | undefined | ALLEGRO_CANVAS,
+  bmp: BITMAP | undefined,
+  sprite: BITMAP | undefined,
   x: number,
   y: number
 ) {
@@ -148,8 +168,8 @@ export function draw_sprite_v_flip(
 
 /// 1.15.8
 export function draw_trans_sprite(
-  bmp: BITMAP | undefined | ALLEGRO_CANVAS,
-  sprite: BITMAP | undefined | ALLEGRO_CANVAS,
+  bmp: BITMAP | undefined,
+  sprite: BITMAP | undefined,
   x: number,
   y: number
 ) {
@@ -158,19 +178,20 @@ export function draw_trans_sprite(
 
 /// 1.15.9
 export function draw_lit_sprite(
-  bmp: BITMAP | undefined | ALLEGRO_CANVAS,
-  sprite: BITMAP | undefined | ALLEGRO_CANVAS,
+  bmp: BITMAP | undefined,
+  sprite: BITMAP | undefined,
   x: number,
   y: number,
   color: number
 ) {
+  void color;
   draw_sprite(bmp, sprite, x, y);
 }
 
 /// 1.15.10
 export function draw_gouraud_sprite(
-  bmp: BITMAP | undefined | ALLEGRO_CANVAS,
-  sprite: BITMAP | undefined | ALLEGRO_CANVAS,
+  bmp: BITMAP | undefined,
+  sprite: BITMAP | undefined,
   x: number,
   y: number,
   c1: number,
@@ -178,18 +199,24 @@ export function draw_gouraud_sprite(
   c3: number,
   c4: number
 ) {
+  void c1;
+  void c2;
+  void c3;
+  void c4;
   draw_sprite(bmp, sprite, x, y);
 }
 
 /// 1.15.11
 export function draw_character_ex(
-  bmp: BITMAP | undefined | ALLEGRO_CANVAS,
-  sprite: BITMAP | undefined | ALLEGRO_CANVAS,
+  bmp: BITMAP | undefined,
+  sprite: BITMAP | undefined,
   x: number,
   y: number,
   color: number,
   bg: number
 ) {
+  void color;
+  void bg;
   draw_sprite(bmp, sprite, x, y);
 }
 
@@ -201,8 +228,8 @@ export function draw_character_ex(
 /// @param x,y coordinates of the centre of the image
 /// @param angle angle of rotation in degrees
 export function rotate_sprite(
-  bmp: BITMAP | undefined | ALLEGRO_CANVAS,
-  sprite: BITMAP | undefined | ALLEGRO_CANVAS,
+  bmp: BITMAP | undefined,
+  sprite: BITMAP | undefined,
   x: number,
   y: number,
   angle: number
@@ -222,12 +249,18 @@ export function rotate_sprite(
 
 /// 1.15.13
 export function rotate_sprite_v_flip(
-  bmp: BITMAP | undefined | ALLEGRO_CANVAS,
-  sprite: BITMAP | undefined | ALLEGRO_CANVAS,
+  bmp: BITMAP | undefined,
+  sprite: BITMAP | undefined,
   x: number,
   y: number,
   angle: number
-) {}
+) {
+  void bmp;
+  void sprite;
+  void x;
+  void y;
+  void angle;
+}
 
 /// 1.15.14 Draws a rotated sprite and scales it
 /// Draws a sprite rotating it around its centre point. The sprite is also scaled. You can omit sy value for uniform scaling. YOu can use negative scale for flipping. Scaling is around the center. The sprite will be centred and rotated around its centre.
@@ -238,8 +271,8 @@ export function rotate_sprite_v_flip(
 /// @param sx horizontal scale, 1.0 is unscaled
 /// @param sy vertical scale (defaults to sx)
 export function rotate_scaled_sprite(
-  bmp: BITMAP | undefined | ALLEGRO_CANVAS,
-  sprite: BITMAP | undefined | ALLEGRO_CANVAS,
+  bmp: BITMAP | undefined,
+  sprite: BITMAP | undefined,
   x: number,
   y: number,
   angle: number,
@@ -262,13 +295,20 @@ export function rotate_scaled_sprite(
 
 /// 1.15.15
 export function rotate_sprite_sprite_v_flip(
-  bmp: BITMAP | undefined | ALLEGRO_CANVAS,
-  sprite: BITMAP | undefined | ALLEGRO_CANVAS,
+  bmp: BITMAP | undefined,
+  sprite: BITMAP | undefined,
   x: number,
   y: number,
   angle: number,
   scale: number
-) {}
+) {
+  void bmp;
+  void sprite;
+  void x;
+  void y;
+  void angle;
+  void scale;
+}
 
 /// 1.15.16 Draws a sprite rotated around an arbitrary point
 /// Draws a sprite rotating it around a given point. Sprite is drawn centered to the pivot point. The pivot point is relative to top-left corner of the image.
@@ -278,8 +318,8 @@ export function rotate_sprite_sprite_v_flip(
 /// @param cx,cy pivot point coordinates
 /// @param angle angle of rotation in degrees
 export function pivot_sprite(
-  bmp: BITMAP | undefined | ALLEGRO_CANVAS,
-  sprite: BITMAP | undefined | ALLEGRO_CANVAS,
+  bmp: BITMAP | undefined,
+  sprite: BITMAP | undefined,
   x: number,
   y: number,
   cx: number,
@@ -299,14 +339,22 @@ export function pivot_sprite(
 
 /// 1.15.17
 export function pivot_sprite_v_flip(
-  bmp: BITMAP | undefined | ALLEGRO_CANVAS,
-  sprite: BITMAP | undefined | ALLEGRO_CANVAS,
+  bmp: BITMAP | undefined,
+  sprite: BITMAP | undefined,
   x: number,
   y: number,
   cx: number,
   cy: number,
   angle: number
-) {}
+) {
+  void bmp;
+  void sprite;
+  void x;
+  void y;
+  void cx;
+  void cy;
+  void angle;
+}
 
 /// 1.15.18 Draws a sprite rotated around an arbitrary point and scaled
 /// Draws a sprite rotating it around a given point. The sprite is also scaled. Sprite is drawn centered to the pivot point. The pivot point is relative to top-left corner of the image  before scaling. You can omit sy value for uniform scaling. You can use negative scale for flipping.
@@ -318,8 +366,8 @@ export function pivot_sprite_v_flip(
 /// @param sx horizontal scale , 1.0 is unscaled
 /// @param sy vertical scale (defaults to sx)
 export function pivot_scaled_sprite(
-  bmp: BITMAP | undefined | ALLEGRO_CANVAS,
-  sprite: BITMAP | undefined | ALLEGRO_CANVAS,
+  bmp: BITMAP | undefined,
+  sprite: BITMAP | undefined,
   x: number,
   y: number,
   cx: number,
@@ -344,14 +392,23 @@ export function pivot_scaled_sprite(
 
 /// 1.15.19
 export function pivot_scaled_sprite_v_flip(
-  bmp: BITMAP | undefined | ALLEGRO_CANVAS,
-  sprite: BITMAP | undefined | ALLEGRO_CANVAS,
+  bmp: BITMAP | undefined,
+  sprite: BITMAP | undefined,
   x: number,
   y: number,
   cx: number,
   cy: number,
   angle: number,
   scale: number
-) {}
+) {
+  void bmp;
+  void sprite;
+  void x;
+  void y;
+  void cx;
+  void cy;
+  void angle;
+  void scale;
+}
 
 //@}

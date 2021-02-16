@@ -10,7 +10,6 @@ import {
   play_sample,
   enable_debug,
   BPS_TO_TIMER,
-  loop,
   makecol,
   clear_to_color,
   install_sound,
@@ -18,6 +17,7 @@ import {
   draw_sprite,
   BITMAP,
   SAMPLE,
+  rest,
 } from "../src/allegro.js";
 
 // bitmap oobjects
@@ -95,7 +95,7 @@ function update() {
 }
 
 // entry point of our example
-function main() {
+async function main() {
   // enable debugging to console element
   enable_debug("debug");
 
@@ -115,21 +115,22 @@ function main() {
   bounce = load_sample("data/bounce.mp3");
 
   // make sure everything has loaded
-  ready(function () {
-    // repeat this game loop
-    loop(function () {
-      // clear screen
-      clear_to_color(screen, makecol(255, 255, 255));
+  await ready();
 
-      // update game logic
-      update();
+  // repeat this game loop
+  while (true) {
+    // clear screen
+    clear_to_color(screen, makecol(255, 255, 255));
 
-      // render everything
-      draw();
+    // update game logic
+    update();
 
-      // all this happens 60 times per second
-    }, BPS_TO_TIMER(60));
-  });
+    // render everything
+    draw();
+
+    // all this happens 60 times per second
+    await rest(16);
+  }
 
   // the end
   return 0;

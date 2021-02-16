@@ -18,12 +18,12 @@ function _parse_config_file(data: string): CONFIG_DATA {
 
   const lines = data
     .split("\n")
-    .filter((line) => !line.match("^#") && line.length > 0);
+    .filter((line) => !/^#/u.exec(line) && line.length > 0);
 
   let section = "";
 
   lines.forEach((line) => {
-    if (line.match("[[a-zA-Z]*]")) {
+    if (/\[[a-zA-Z]*\]/u.exec(line)) {
       section = line.replace("[", "").replace("]", "");
     } else if (line.includes("=")) {
       const [key, val] = line.split("=");
@@ -92,7 +92,9 @@ export function pop_config_state() {
 }
 
 /// 1.4.7
-export function flush_config_state() {}
+export function flush_config_state() {
+  /// NOOP
+}
 
 /// 1.4.8
 export function reload_config_texts(new_language: string) {
@@ -105,10 +107,16 @@ export function hook_config_section(
   intgetter: (name: string, def: number) => void,
   stringgetter: (name: string, def: string) => void,
   stringsetter: (name: string, value: string) => void
-) {}
+) {
+  void section;
+  void intgetter;
+  void stringgetter;
+  void stringsetter;
+}
 
 /// 1.4.10
 export function config_is_hooked(section: number) {
+  void section;
   return false;
 }
 
@@ -119,17 +127,20 @@ export function get_config_string(section: string, name: string, def: string) {
 
 /// 1.4.12
 export function get_config_int(section: string, name: string, def: number) {
-  return parseInt(config.data[section]?.[name] ?? "") ?? def;
+  const data = config.data[section]?.[name];
+  return typeof data === "string" ? parseInt(data, 10) : def;
 }
 
 /// 1.4.13
 export function get_config_hex(section: string, name: string, def: number) {
-  return parseInt(config.data[section]?.[name] ?? "") ?? def;
+  const data = config.data[section]?.[name];
+  return typeof data === "string" ? parseInt(data, 10) : def;
 }
 
 /// 1.4.14
 export function get_config_float(section: string, name: string, def: number) {
-  return parseFloat(config.data[section]?.[name] ?? "") ?? def;
+  const data = config.data[section]?.[name];
+  return typeof data === "string" ? parseFloat(data) : def;
 }
 
 /// 1.4.15
@@ -194,6 +205,7 @@ export function list_config_entries(section: string) {
 
 /// 1.4.24
 export function list_config_sections(names: string[]) {
+  void names;
   return Object.keys(config.data);
 }
 

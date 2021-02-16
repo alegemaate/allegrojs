@@ -19,9 +19,9 @@ import {
   KEY_X,
   KEY_Z,
   line,
-  loop,
   makecol,
   rand,
+  rest,
   screen,
   SCREEN_H,
   SCREEN_W,
@@ -196,13 +196,14 @@ function draw() {
 }
 
 // Main
-function main() {
+async function main() {
   init();
 
-  loop(() => {
+  while (true) {
     update();
     draw();
-  }, 16.6);
+    rest(16);
+  }
 
   return 0;
 }

@@ -1,31 +1,33 @@
+/* eslint-disable */
+
 const re = {
-  not_string: /[^s]/,
-  not_bool: /[^t]/,
-  not_type: /[^T]/,
-  not_primitive: /[^v]/,
-  number: /[diefg]/,
-  numeric_arg: /[bcdiefguxX]/,
-  json: /[j]/,
-  not_json: /[^j]/,
-  text: /^[^\x25]+/,
-  modulo: /^\x25{2}/,
-  placeholder: /^\x25(?:([1-9]\d*)\$|\(([^)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijostTuvxX])/,
+  not_string: /[^s]/u,
+  not_bool: /[^t]/u,
+  not_type: /[^T]/u,
+  not_primitive: /[^v]/u,
+  number: /[diefg]/u,
+  numeric_arg: /[bcdiefguxX]/u,
+  json: /[j]/u,
+  not_json: /[^j]/u,
+  text: /^[^\x25]+/u,
+  modulo: /^\x25{2}/u,
+  placeholder: /^\x25(?:([1-9]\d*)\$|\(([^)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijostTuvxX])/u,
   key: /^([a-z_][a-z_\d]*)/i,
-  key_access: /^\.([a-z_][a-z_\d]*)/i,
-  index_access: /^\[(\d+)\]/,
-  sign: /^[+-]/,
+  key_access: /^\.([a-z_][a-z_\d]*)/iu,
+  index_access: /^\[(\d+)\]/u,
+  sign: /^[+-]/u,
 };
 
-export function sprintf(key: string, ...args: (string | number)[]) {
+export function sprintf(key: string, ...args: (number | string)[]) {
   // `arguments` is not an array, but should be fine for this call
   return sprintf_format(sprintf_parse(key), [key, ...args]);
 }
 
-export function vsprintf(fmt: string, argv: (string | number)[]) {
+export function vsprintf(fmt: string, argv: (number | string)[]) {
   return sprintf.apply(null, [fmt, ...argv]);
 }
 
-function sprintf_format(parse_tree: any, argv: (string | number)[]) {
+function sprintf_format(parse_tree: any, argv: (number | string)[]) {
   let cursor = 1;
   let tree_length = parse_tree.length;
   let arg: any;
