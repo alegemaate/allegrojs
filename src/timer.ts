@@ -12,8 +12,12 @@ export const timer_driver = {
 };
 
 /// 1.6.1
-/// Does nothing.
 export function install_timer(): number {
+  // Setup retrace_counter
+  install_int(() => {
+    retrace_count += 1;
+  }, 1000 / 70);
+
   return 1;
 }
 
@@ -98,7 +102,7 @@ export function remove_param_int(proc: () => void, param: string) {
 }
 
 /// 1.6.12
-export const retrace_count = 0;
+export let retrace_count = 0;
 
 /// 1.6.13
 export async function rest(time: number) {

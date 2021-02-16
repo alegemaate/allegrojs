@@ -21,6 +21,7 @@ export function install_allegro(
   void system_id;
   void errno_ptr;
   void atexit_ptr;
+  check_cpu();
   log("Allegro installed!");
   window.setInterval(_uberloop, 16.6);
   log("Game loop initialised!");
@@ -34,7 +35,7 @@ export function allegro_init(): number {
 
 /// 1.1.3
 export function allegro_exit() {
-  // exit here
+  log("Allegro exited.");
 }
 
 /// 1.1.4 Macro to be placed after the end of main()
@@ -139,19 +140,22 @@ export function get_desktop_resolution(width: number, height: number) {
 
 /// 1.1.24
 export function check_cpu() {
-  //
+  cpu_vendor = "Browser CPU";
+  cpu_family = "Browser CPU Family";
+  cpu_model = "Browser CPU Model";
+  cpu_capabilities = 0;
 }
 
 /// 1.1.25
-export const cpu_vendor = "Browser";
+export let cpu_vendor = "";
 
 /// 1.1.26
-export const cpu_family = "Browser";
+export let cpu_family = "";
 
 /// 1.1.27
-export const cpu_model = "Browser";
+export let cpu_model = "";
 
 /// 1.1.28
-export const cpu_capabilities = 0;
+export let cpu_capabilities = 0;
 
 //@}

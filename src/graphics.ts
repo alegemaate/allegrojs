@@ -9,6 +9,20 @@ import { draw_sprite } from "./sprites.js";
 import { BITMAP, FONT } from "./types.js";
 import { screen } from "./bitmap.js";
 
+export const gfx_driver = {
+  id: 0,
+  name: "Browser Graphics",
+  desc: "Browser Graphics",
+  ascii_name: "Browser Graphics",
+  w: window.outerWidth,
+  h: window.outerHeight,
+  linear: false,
+  bank_size: 0,
+  vid_mem: 0,
+  vid_phys_base: 0,
+  windowed: true,
+};
+
 /// 1.10.2
 /// Screen bitmap width in pixels
 export let SCREEN_W = 0;
@@ -73,6 +87,7 @@ export function set_gfx_mode(
   const cv = document.getElementById(canvas_id) as
     | HTMLCanvasElement
     | undefined;
+
   if (!cv) {
     _error("Can't find canvas with id " + canvas_id);
     return -1;
