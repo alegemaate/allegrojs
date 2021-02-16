@@ -2,13 +2,22 @@
 /// @name TYPES
 //@{
 
-/// Special type
+/// Special types
 export type ALLEGRO_CANVAS = {
   w: number;
   h: number;
   canvas: HTMLCanvasElement;
   context: CanvasRenderingContext2D;
   ready: boolean;
+};
+
+export type CONFIG_DATA = Record<string, Record<string, string>>;
+
+export type CONFIG = {
+  file: string;
+  data: CONFIG_DATA;
+  ready: boolean;
+  type: "config";
 };
 
 /// Timer object

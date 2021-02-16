@@ -4,7 +4,6 @@
 
 import { makecol } from "./allegro.js";
 import { log, _error } from "./debug.js";
-import { load_base64_font, _cartoon_woff } from "./font.js";
 import { clear_to_color } from "./primitives.js";
 import { draw_sprite } from "./sprites.js";
 import { BITMAP, FONT } from "./types.js";
@@ -86,7 +85,7 @@ export function set_gfx_mode(
   }
 
   // Turn off image aliasing
-  ctx.imageSmoothingEnabled = true;
+  ctx.imageSmoothingEnabled = false;
 
   SCREEN_W = cmp_width;
   SCREEN_H = cmp_height;
@@ -98,7 +97,7 @@ export function set_gfx_mode(
   screen.ready = true;
   clear_to_color(screen, makecol(0, 0, 0));
 
-  font = load_base64_font(_cartoon_woff);
+  font = { element: null, file: "", name: "Monospace", size: 14, type: "fnt" };
   _gfx_installed = true;
   log("Graphics mode set to " + cmp_width + " x " + cmp_height);
   return 0;

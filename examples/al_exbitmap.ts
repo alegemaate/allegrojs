@@ -32,6 +32,7 @@ import {
 enable_debug("debug");
 
 function main() {
+  let argv = ["", "data/man.png"];
   let the_image!: BITMAP;
   let the_palette!: PALETTE;
 
@@ -42,18 +43,16 @@ function main() {
   if (set_gfx_mode("canvas_id", GFX_AUTODETECT, 320, 200, 0, 0) != 0) {
     if (set_gfx_mode("canvas_id", GFX_SAFE, 320, 200, 0, 0) != 0) {
       set_gfx_mode("canvas_id", GFX_TEXT, 0, 0, 0, 0);
-      allegro_message(
-        "Unable to set any graphic mode\n" + allegro_error + "\n"
-      );
+      allegro_message("Unable to set any graphic mode\n%s\n", allegro_error);
       return 1;
     }
   }
 
   /* read in the bitmap file */
-  the_image = load_bitmap("data/man.png", the_palette);
+  the_image = load_bitmap(argv[1] as string, the_palette);
   if (!the_image) {
     set_gfx_mode("canvas_id", GFX_TEXT, 0, 0, 0, 0);
-    allegro_message("Error reading bitmap file 'man.png'");
+    allegro_message("Error reading bitmap file '%s'\n", argv[1] as string);
     return 1;
   }
 

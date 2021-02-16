@@ -30,6 +30,7 @@ import {
   KEY_RIGHT,
   KEY_UP,
   allegro_init,
+  GFX_AUTODETECT,
 } from "../src/allegro.js";
 
 //bitmap objects
@@ -54,7 +55,7 @@ let score = 0;
 // rendering function
 function draw() {
   // draw background
-  blit(bg, screen, 0, 0, 0, 0, 0, 0);
+  blit(bg, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
 
   // draw player
   draw_sprite(screen, man, player_x, player_y);
@@ -104,7 +105,7 @@ function main() {
   enable_debug("debug");
 
   allegro_init();
-  set_gfx_mode("canvas_id", 640, 480, 0, 0, 0);
+  set_gfx_mode("canvas_id", GFX_AUTODETECT, 640, 480, 0, 0);
   install_mouse();
   install_keyboard();
   install_sound();
@@ -114,8 +115,8 @@ function main() {
   bg = load_bmp("data/grass.jpg");
   munch = load_sample("data/munch.mp3");
 
-  ready(function () {
-    loop(function () {
+  ready(() => {
+    loop(() => {
       update();
       draw();
     }, BPS_TO_TIMER(60));

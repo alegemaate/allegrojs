@@ -51,6 +51,7 @@ import {
   ready,
   GFX_AUTODETECT,
   GFX_TEXT,
+  allegro_error,
 } from "../src/allegro.js";
 
 enable_debug("debug");
@@ -107,7 +108,7 @@ function main() {
     set_gfx_mode("canvas_id", GFX_AUTODETECT, 1024, 768, 0, 2 * 768 + 200) != 0
   ) {
     set_gfx_mode("", GFX_TEXT, 0, 0, 0, 0);
-    allegro_message("Could not set gfx mode");
+    allegro_message("Error setting graphics mode\n%s\n", allegro_error);
     return 1;
   }
 
@@ -115,7 +116,7 @@ function main() {
   image = load_bitmap(buf, pal);
   if (!image) {
     set_gfx_mode("", GFX_TEXT, 0, 0, 0, 0);
-    allegro_message("Error reading " + buf + "!");
+    allegro_message("Error reading %s!\n", buf);
     return 1;
   }
 
@@ -172,9 +173,10 @@ function main() {
         font,
         0,
         0,
-        makecol(255, 255, 255),
+        255,
         -1,
-        "Images: " + num_images + " (arrow keys to change)"
+        "Images: %d (arrow keys to change)",
+        num_images
       );
 
       /* tell the user which functions are being done in hardware */

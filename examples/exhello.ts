@@ -9,14 +9,18 @@ import {
   clear_to_color,
   textout_centre_ex,
   font,
+  GFX_AUTODETECT,
+  enable_debug,
 } from "../src/allegro.js";
+
+enable_debug("debug");
 
 function main() {
   // Initialising allegro.js
   allegro_init();
 
   // Selecting canvas element adn setting it up for display at 640x480
-  set_gfx_mode("canvas_id", 0, 640, 480, 0, 0);
+  set_gfx_mode("canvas_id", GFX_AUTODETECT, 640, 480, 0, 0);
 
   // Clears the screen to white
   clear_to_color(screen, makecol(255, 255, 255));
@@ -28,8 +32,8 @@ function main() {
     "Hello World!",
     SCREEN_W / 2,
     SCREEN_H / 2,
-    24,
-    makecol(0, 0, 0)
+    makecol(0, 0, 0),
+    makecol(255, 0, 0)
   );
 
   return 0;

@@ -87,6 +87,7 @@ export function keypressed(): boolean {
 export function readkey(): number {
   while (key_buffer.length === 0) {
     rest(1);
+    _keyboard_loop();
   }
   const top = key_buffer.pop();
   if (typeof top === "number") {

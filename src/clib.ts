@@ -4,11 +4,3 @@ export function atoi(str: string | undefined) {
   }
   return parseInt(str);
 }
-
-export function free(val: any) {
-  void val;
-}
-
-export function exit(code: number) {
-  void code;
-}

@@ -4,6 +4,13 @@
 import { log } from "./debug.js";
 import { TIMER } from "./types.js";
 
+export const timer_driver = {
+  id: 0,
+  name: "Browser Timer",
+  desc: " Browser Timer",
+  ascii_name: "Browser Timer",
+};
+
 /// 1.6.1
 /// Does nothing.
 export function install_timer(): number {
@@ -36,13 +43,19 @@ export function install_int_ex(proc: () => void, speed: number) {
 }
 
 /// 1.6.5
-export function LOCK_VARIABLE(variable_name: string) {}
+export function LOCK_VARIABLE(variable_name: string | number) {
+  void variable_name;
+}
 
 /// 1.6.6
-export function LOCK_FUNCTION(function_name: string) {}
+export function LOCK_FUNCTION(function_name: () => void) {
+  void function_name;
+}
 
 /// 1.6.7
-export function END_OF_FUNCTION(function_name: string) {}
+export function END_OF_FUNCTION(function_name: () => void) {
+  void function_name;
+}
 
 /// 1.6.8 Removes interrupt
 /// @param procedure interrupt procedure to be removed
@@ -80,7 +93,11 @@ export const retrace_count: number = 0;
 
 /// 1.6.13
 export function rest(time: number) {
-  //sleep
+  const date = Date.now();
+  let currentDate = null;
+  do {
+    currentDate = Date.now();
+  } while (currentDate - date < time);
 }
 
 /// 1.6.13

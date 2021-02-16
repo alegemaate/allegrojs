@@ -3,6 +3,7 @@
 //@{
 
 import { log } from "./debug.js";
+import { vsprintf } from "./sprintf.js";
 
 /// 1.1.1 Installs allegro.
 /// This function must be called before anything else.
@@ -75,8 +76,11 @@ export const os_version = 0;
 export const os_multitasking = true;
 
 /// 1.1.18
-export function allegro_message(text_format: string) {
-  alert(text_format);
+export function allegro_message(
+  text_format: string,
+  ...args: (string | number)[]
+) {
+  alert(vsprintf(text_format, args));
 }
 
 /// 1.1.19

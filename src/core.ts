@@ -6,15 +6,15 @@ import { SCREEN_H, SCREEN_W } from "./graphics.js";
 import { _keyboard_loop } from "./keyboard.js";
 import { scaleclamp } from "./math.js";
 import { _mouse_loop, _mouse_loop_reset } from "./mouse.js";
-import { rectfill } from "./primitives.js";
+import { clear_bitmap, rectfill } from "./primitives.js";
 import { time } from "./timer.js";
 import { _touch_loop } from "./touch.js";
 import { makecol } from "./color.js";
-import { BITMAP, SAMPLE } from "./types.js";
+import { BITMAP, CONFIG, SAMPLE } from "./types.js";
 import { screen } from "./bitmap.js";
 
 /// All downloadable objects
-export const _downloadables: (BITMAP | SAMPLE)[] = [];
+export const _downloadables: (BITMAP | SAMPLE | CONFIG)[] = [];
 
 /// registered loop procedure
 let _loopproc = () => {
@@ -23,6 +23,7 @@ let _loopproc = () => {
 
 /// Performs some loop tasks, such as cleaning up pressed[] and released[]
 export function _uberloop() {
+  clear_bitmap(screen);
   _mouse_loop();
   _loopproc();
   _keyboard_loop();

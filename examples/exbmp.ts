@@ -8,7 +8,10 @@ import {
   SCREEN_W,
   END_OF_MAIN,
   loop,
+  enable_debug,
 } from "../src/allegro.js";
+
+enable_debug("debug");
 
 // Globally declared bitmap object
 function main() {

@@ -210,7 +210,7 @@ export function load_bitmap(filename: string, pal?: RGB): BITMAP {
     throw new Error("Context not defined");
   }
 
-  const bmp: BITMAP | undefined = {
+  const bmp: BITMAP = {
     canvas: cv,
     context: ctx,
     w: -1,
