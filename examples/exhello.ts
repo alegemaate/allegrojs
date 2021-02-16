@@ -11,6 +11,8 @@ import {
   font,
   GFX_AUTODETECT,
   enable_debug,
+  install_keyboard,
+  readkey,
 } from "../src/allegro.js";
 
 enable_debug("debug");
@@ -18,6 +20,8 @@ enable_debug("debug");
 async function main() {
   // Initialising allegro.js
   allegro_init();
+
+  install_keyboard();
 
   // Selecting canvas element adn setting it up for display at 640x480
   set_gfx_mode("canvas_id", GFX_AUTODETECT, 640, 480, 0, 0);
@@ -35,6 +39,8 @@ async function main() {
     makecol(0, 0, 0),
     makecol(255, 0, 0)
   );
+
+  await readkey();
 
   return 0;
 }

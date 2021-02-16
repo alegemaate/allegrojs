@@ -12,7 +12,8 @@
     "downlevelIteration": true,
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
-    "outDir": "build"
+    "outDir": "build",
+    "incremental": true
   },
   "include": ["./*.ts"]
 }

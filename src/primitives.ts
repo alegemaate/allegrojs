@@ -11,7 +11,7 @@ import { BITMAP } from "./types.js";
 /// Fills the entire bitmap with 0 value, which represents transparent black.
 /// @param bitmap bitmap to be cleared
 export function clear_bitmap(bitmap: BITMAP | undefined) {
-  clear_to_color(bitmap, 0xff000000);
+  clear_to_color(bitmap, 0x000000);
 }
 
 /// 1.14.2
@@ -596,7 +596,7 @@ export function _strokestyle(
     "," +
     getb(colour) +
     "," +
-    geta(colour) / 255 +
+    (255 - geta(colour)) / 255 +
     ")";
 }
 

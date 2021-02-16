@@ -17,29 +17,37 @@ import {
   frand,
   textout_ex,
   blit,
-  MSEC_TO_TIMER,
   font,
   rest,
+  KEY_ESC,
+  key,
+  install_allegro,
+  allegro_init,
+  install_keyboard,
+  GFX_AUTODETECT,
+  textprintf_ex,
 } from "../src/allegro.js";
 
-var num = 0;
-var x: any[] = [],
-  y: any[] = [],
-  vx: any[] = [],
-  vy: any[] = [];
-var last_time = 0;
-var buffer!: BITMAP;
-var bmp!: BITMAP;
+let num = 0;
+const x: any[] = [];
+const y: any[] = [];
+const vx: any[] = [];
+const vy: any[] = [];
+let last_time = 0;
+let buffer!: BITMAP;
+let bmp!: BITMAP;
 
 async function main() {
   enable_debug("debug");
-  set_gfx_mode("stress", 640, 480, 0, 0, 0);
+  allegro_init();
+  install_keyboard();
+  set_gfx_mode("stress", GFX_AUTODETECT, 640, 480, 0, 0);
   bmp = load_bmp("data/planet.png");
   buffer = create_bitmap(SCREEN_W, SCREEN_H);
 
   await ready();
 
-  while (true) {
+  while (!key[KEY_ESC]) {
     clear_to_color(buffer, makecol(255, 255, 255));
 
     for (var c = 0; c < num; c++) {
@@ -66,22 +74,20 @@ async function main() {
     vy.push(frand() * 2 - 1);
     num++;
     var msec = Date.now() - last_time - 1;
-    textout_ex(
+    textprintf_ex(
       buffer,
       font,
-      "Sprites: " +
-        num +
-        " took " +
-        msec +
-        " msec ( " +
-        (1000 / msec).toFixed() +
-        " fps)",
       20,
       20,
-      24,
-      makecol(255, 255, 255)
+      makecol(0, 0, 0),
+      makecol(255, 255, 255),
+      "Sprites: %i took %f msec (%i fps)",
+      num,
+      msec,
+      msec,
+      (1000 / msec).toFixed()
     );
-    blit(buffer, screen, 0, 0, 0, 0, 0, 0);
+    blit(buffer, screen, 0, 0, 0, 0, SCREEN_W, SCREEN_H);
     last_time = Date.now();
     await rest(16);
   }

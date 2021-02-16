@@ -7,14 +7,15 @@ import {
   clear_to_color,
   create_bitmap,
   draw_sprite,
+  enable_debug,
   END_OF_MAIN,
   getb,
   getg,
   getr,
   GFX_AUTODETECT_WINDOWED,
   install_keyboard,
-  install_mouse,
   key,
+  KEY_ESC,
   KEY_R,
   KEY_X,
   KEY_Z,
@@ -29,6 +30,8 @@ import {
   set_gfx_mode,
   set_window_title,
 } from "../src/allegro.js";
+
+enable_debug("debug");
 
 // Struct turtle
 type Turtle = {
@@ -140,7 +143,6 @@ function init() {
   // Allegro
   allegro_init();
   install_keyboard();
-  install_mouse();
 
   // Screen
   set_color_depth(32);
@@ -174,7 +176,6 @@ function update() {
   if (key[KEY_R]) {
     clear_to_color(pen_buffer, 0x000000);
   }
-
   if (key[KEY_Z]) {
     binary_tree(turt, 200, 3, 1);
   }
@@ -199,10 +200,10 @@ function draw() {
 async function main() {
   init();
 
-  while (true) {
+  while (!key[KEY_ESC]) {
     update();
     draw();
-    rest(16);
+    await rest(16);
   }
 
   return 0;

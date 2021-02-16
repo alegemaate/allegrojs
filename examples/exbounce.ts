@@ -18,6 +18,9 @@ import {
   BITMAP,
   SAMPLE,
   rest,
+  KEY_ESC,
+  key,
+  install_keyboard,
 } from "../src/allegro.js";
 
 // bitmap oobjects
@@ -105,6 +108,8 @@ async function main() {
 
   install_sound();
 
+  install_keyboard();
+
   // load ball image
   ball = load_bmp("data/planet.png");
 
@@ -118,7 +123,7 @@ async function main() {
   await ready();
 
   // repeat this game loop
-  while (true) {
+  while (!key[KEY_ESC]) {
     // clear screen
     clear_to_color(screen, makecol(255, 255, 255));
 

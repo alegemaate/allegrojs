@@ -30,6 +30,7 @@ import {
   allegro_init,
   GFX_AUTODETECT,
   rest,
+  KEY_ESC,
 } from "../src/allegro.js";
 
 //bitmap objects
@@ -116,11 +117,12 @@ async function main() {
 
   await ready();
 
-  while (true) {
+  while (!key[KEY_ESC]) {
     update();
     draw();
     await rest(16);
   }
+
   return 0;
 }
 END_OF_MAIN(main);

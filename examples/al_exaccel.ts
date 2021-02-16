@@ -45,7 +45,6 @@ import {
   GFX_HW_FILL,
   gfx_capabilities,
   GFX_HW_VRAM_BLIT,
-  makecol,
   enable_debug,
   ready,
   GFX_AUTODETECT,
@@ -189,7 +188,7 @@ async function main() {
         "Clear: hardware accelerated",
         0,
         16,
-        makecol(255, 255, 255),
+        255,
         -1
       );
     else
@@ -199,7 +198,7 @@ async function main() {
         "Clear: software (urgh, this is not good!)",
         0,
         16,
-        makecol(255, 255, 255),
+        255,
         -1
       );
 
@@ -210,7 +209,7 @@ async function main() {
         "Blit: hardware accelerated",
         0,
         32,
-        makecol(255, 255, 255),
+        255,
         -1
       );
     else
@@ -220,7 +219,7 @@ async function main() {
         "Blit: software (urgh, this program will run too sloooooowly without hardware acceleration!)",
         0,
         32,
-        makecol(255, 255, 255),
+        255,
         -1
       );
 

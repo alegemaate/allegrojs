@@ -285,6 +285,7 @@ export const _default_enabled_keys = [
   KEY_F10,
   KEY_F11,
   KEY_F12,
+  KEY_ESC,
 ];
 
 /// array of prevent default avoiders

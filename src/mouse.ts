@@ -331,8 +331,8 @@ export function _mouse_loop_reset() {
       draw_sprite(
         screen,
         cursor,
-        mouse_x + _mouse_focus_x,
-        mouse_y + _mouse_focus_y
+        mouse_x - _mouse_focus_x,
+        mouse_y - _mouse_focus_y
       );
       screen.canvas.style.cursor = "none";
     } else {

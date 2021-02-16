@@ -18,24 +18,31 @@ import {
   MSEC_TO_TIMER,
   font,
   rest,
+  KEY_ESC,
+  key,
+  allegro_init,
+  install_keyboard,
+  GFX_AUTODETECT,
 } from "../src/allegro.js";
 
-var num = 0;
-var x: any[] = [],
-  y: any[] = [],
-  vx: any[] = [],
-  vy: any[] = [];
-var last_time = 0;
-var bmp!: BITMAP;
+let num = 0;
+const x: any[] = [];
+const y: any[] = [];
+const vx: any[] = [];
+const vy: any[] = [];
+let last_time = 0;
+let bmp!: BITMAP;
 
 async function main() {
+  allegro_init();
+  install_keyboard();
   enable_debug("debug");
-  set_gfx_mode("stress", 1, 640, 480, 0, 0);
+  set_gfx_mode("stress", GFX_AUTODETECT, 640, 480, 0, 0);
   bmp = load_bmp("data/planet.png");
 
   await ready();
 
-  while (true) {
+  while (!key[KEY_ESC]) {
     clear_to_color(screen, makecol(255, 255, 255));
 
     for (var c = 0; c < num; c++) {

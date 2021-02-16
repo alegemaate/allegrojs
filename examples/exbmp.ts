@@ -9,6 +9,8 @@ import {
   END_OF_MAIN,
   enable_debug,
   ready,
+  readkey,
+  install_keyboard,
 } from "../src/allegro.js";
 
 enable_debug("debug");
@@ -17,6 +19,7 @@ enable_debug("debug");
 async function main() {
   // Initialises allegro.js
   allegro_init();
+  install_keyboard();
 
   // Installs graphics at given canvas in 640x480 resolution
   set_gfx_mode("canvas_id", 0, 640, 480, 0, 0);
@@ -30,6 +33,8 @@ async function main() {
 
   // renders the loaded image on the screen
   stretch_blit(logo, screen, 0, 0, logo.w, logo.h, 0, 0, SCREEN_W, SCREEN_H);
+
+  await readkey();
 
   return 0;
 }
