@@ -1,7 +1,7 @@
 import {
   load_bmp,
   ready,
-  canvas,
+  screen,
   END_OF_MAIN,
   SCREEN_W,
   SCREEN_H,
@@ -12,35 +12,33 @@ import {
   makecol,
   load_sample,
   draw_sprite,
-  AllegroBitmap,
-  AllegroSample,
-  textout,
-  simple_blit,
+  BITMAP,
+  SAMPLE,
+  textout_ex,
+  blit,
   key,
   distance,
   rand,
   log,
-  install_allegro,
   set_gfx_mode,
   install_mouse,
   install_sound,
   font,
-} from "../src/allegro.js";
-import {
   install_keyboard,
   KEY_DOWN,
   KEY_LEFT,
   KEY_RIGHT,
   KEY_UP,
-} from "../src/keyboard.js";
+  allegro_init,
+} from "../src/allegro.js";
 
 //bitmap objects
-let man!: AllegroBitmap;
-let apple!: AllegroBitmap;
-let bg!: AllegroBitmap;
+let man!: BITMAP;
+let apple!: BITMAP;
+let bg!: BITMAP;
 
 // munching soudn evffect
-let munch!: AllegroSample;
+let munch!: SAMPLE;
 
 // apple position
 let apple_x = 200,
@@ -56,25 +54,23 @@ let score = 0;
 // rendering function
 function draw() {
   // draw background
-  simple_blit(bg, canvas, 0, 0);
+  blit(bg, screen, 0, 0, 0, 0, 0, 0);
 
   // draw player
-  draw_sprite(canvas, man, player_x, player_y);
+  draw_sprite(screen, man, player_x, player_y);
 
   // draw the apple
-  draw_sprite(canvas, apple, apple_x, apple_y);
+  draw_sprite(screen, apple, apple_x, apple_y);
 
   // print out current score
-  textout(
-    canvas,
+  textout_ex(
+    screen,
     font,
     "Score: " + score,
     10,
     30,
-    24,
     makecol(255, 255, 255),
-    makecol(0, 0, 0),
-    1
+    makecol(0, 0, 0)
   );
 }
 
@@ -107,8 +103,8 @@ function update() {
 function main() {
   enable_debug("debug");
 
-  install_allegro();
-  set_gfx_mode("canvas_id", 640, 480);
+  allegro_init();
+  set_gfx_mode("canvas_id", 640, 480, 0, 0, 0);
   install_mouse();
   install_keyboard();
   install_sound();

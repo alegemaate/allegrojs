@@ -2,7 +2,7 @@ import {
   set_gfx_mode,
   load_bmp,
   ready,
-  canvas,
+  screen,
   END_OF_MAIN,
   stretch_blit,
   SCREEN_W,
@@ -16,16 +16,16 @@ import {
   install_sound,
   load_sample,
   draw_sprite,
-  AllegroBitmap,
-  AllegroSample,
+  BITMAP,
+  SAMPLE,
 } from "../src/allegro.js";
 
 // bitmap oobjects
-let clouds!: AllegroBitmap;
-let ball!: AllegroBitmap;
+let clouds!: BITMAP;
+let ball!: BITMAP;
 
 // sample object
-var bounce!: AllegroSample;
+var bounce!: SAMPLE;
 
 // size and speed of the ball
 var speed = 5;
@@ -43,7 +43,7 @@ function draw() {
   // draw allegro clouds background
   stretch_blit(
     clouds,
-    canvas,
+    screen,
     0,
     0,
     clouds.w,
@@ -55,7 +55,7 @@ function draw() {
   );
 
   // draws the ball centered
-  draw_sprite(canvas, ball, cx, cy);
+  draw_sprite(screen, ball, cx, cy);
 }
 
 // update game logic
@@ -101,7 +101,7 @@ function main() {
 
   // put allegro in canvas with id="canvas_id"
   // make the dimesnions 640x480
-  set_gfx_mode("canvas_id", 640, 480);
+  set_gfx_mode("canvas_id", 1, 640, 480, 0, 0);
 
   install_sound();
 
@@ -119,7 +119,7 @@ function main() {
     // repeat this game loop
     loop(function () {
       // clear screen
-      clear_to_color(canvas, makecol(255, 255, 255));
+      clear_to_color(screen, makecol(255, 255, 255));
 
       // update game logic
       update();

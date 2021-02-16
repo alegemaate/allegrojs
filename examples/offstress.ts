@@ -2,7 +2,7 @@ import {
   set_gfx_mode,
   load_bmp,
   ready,
-  canvas,
+  screen,
   END_OF_MAIN,
   SCREEN_W,
   SCREEN_H,
@@ -11,13 +11,13 @@ import {
   makecol,
   clear_to_color,
   draw_sprite,
-  AllegroBitmap,
+  BITMAP,
   create_bitmap,
   abs,
   rand,
   frand,
-  textout,
-  simple_blit,
+  textout_ex,
+  blit,
   MSEC_TO_TIMER,
   font,
   time,
@@ -29,12 +29,12 @@ var x: any[] = [],
   vx: any[] = [],
   vy: any[] = [];
 var last_time = 0;
-var buffer!: AllegroBitmap;
-var bmp!: AllegroBitmap;
+var buffer!: BITMAP;
+var bmp!: BITMAP;
 
 function main() {
   enable_debug("debug");
-  set_gfx_mode("stress", 640, 480, true);
+  set_gfx_mode("stress", 640, 480, 0, 0, 0);
   bmp = load_bmp("data/planet.png");
   buffer = create_bitmap(SCREEN_W, SCREEN_H);
   ready(function () {
@@ -65,7 +65,7 @@ function main() {
       vy.push(frand() * 2 - 1);
       num++;
       var msec = time() - last_time - 1;
-      textout(
+      textout_ex(
         buffer,
         font,
         "Sprites: " +
@@ -80,7 +80,7 @@ function main() {
         24,
         makecol(255, 255, 255)
       );
-      simple_blit(buffer, canvas, 0, 0);
+      blit(buffer, screen, 0, 0, 0, 0, 0, 0);
       last_time = time();
     }, MSEC_TO_TIMER(1));
   });

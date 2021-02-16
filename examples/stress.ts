@@ -2,7 +2,7 @@ import {
   set_gfx_mode,
   load_bmp,
   ready,
-  canvas,
+  screen,
   END_OF_MAIN,
   SCREEN_W,
   SCREEN_H,
@@ -11,12 +11,12 @@ import {
   makecol,
   clear_to_color,
   draw_sprite,
-  AllegroBitmap,
+  BITMAP,
   abs,
   rand,
   frand,
   time,
-  textout,
+  textout_ex,
   MSEC_TO_TIMER,
   font,
 } from "../src/allegro.js";
@@ -27,18 +27,18 @@ var x: any[] = [],
   vx: any[] = [],
   vy: any[] = [];
 var last_time = 0;
-var bmp!: AllegroBitmap;
+var bmp!: BITMAP;
 
 function main() {
   enable_debug("debug");
-  set_gfx_mode("stress", 640, 480);
+  set_gfx_mode("stress", 1, 640, 480, 0, 0);
   bmp = load_bmp("data/planet.png");
   ready(function () {
     loop(function () {
-      clear_to_color(canvas, makecol(255, 255, 255));
+      clear_to_color(screen, makecol(255, 255, 255));
 
       for (var c = 0; c < num; c++) {
-        draw_sprite(canvas, bmp, x[c], y[c]);
+        draw_sprite(screen, bmp, x[c], y[c]);
         if (x[c] + vx[c] > SCREEN_W) {
           vx[c] = -abs(vx[c]);
         }
@@ -61,8 +61,8 @@ function main() {
       vy.push(frand() * 2 - 1);
       num++;
       var msec = time() - last_time - 1;
-      textout(
-        canvas,
+      textout_ex(
+        screen,
         font,
         "Sprites: " +
           num +
@@ -73,10 +73,8 @@ function main() {
           " fps)",
         20,
         30,
-        24,
         makecol(255, 255, 255),
-        makecol(0, 0, 0),
-        1
+        makecol(0, 0, 0)
       );
       last_time = time();
     }, MSEC_TO_TIMER(1));

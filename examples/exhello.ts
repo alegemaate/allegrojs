@@ -1,13 +1,13 @@
 import {
   allegro_init,
   set_gfx_mode,
-  canvas,
+  screen,
   END_OF_MAIN,
   SCREEN_W,
   SCREEN_H,
   makecol,
   clear_to_color,
-  textout_centre,
+  textout_centre_ex,
   font,
 } from "../src/allegro.js";
 
@@ -16,14 +16,14 @@ function main() {
   allegro_init();
 
   // Selecting canvas element adn setting it up for display at 640x480
-  set_gfx_mode("canvas_id", 640, 480);
+  set_gfx_mode("canvas_id", 0, 640, 480, 0, 0);
 
   // Clears the screen to white
-  clear_to_color(canvas, makecol(255, 255, 255));
+  clear_to_color(screen, makecol(255, 255, 255));
 
   // Typoes 'Hello World!' message to the centre of the screen
-  textout_centre(
-    canvas,
+  textout_centre_ex(
+    screen,
     font,
     "Hello World!",
     SCREEN_W / 2,
