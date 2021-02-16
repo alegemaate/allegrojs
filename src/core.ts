@@ -2,17 +2,19 @@
 //@{
 
 import { log } from "./debug.js";
-import { canvas, SCREEN_H, SCREEN_W } from "./graphics.js";
+import { SCREEN_H, SCREEN_W } from "./graphics.js";
 import { _keyboard_loop } from "./keyboard.js";
 import { scaleclamp } from "./math.js";
 import { _mouse_loop, _mouse_loop_reset } from "./mouse.js";
-import { makecol, rectfill } from "./primitives.js";
+import { rectfill } from "./primitives.js";
 import { time } from "./timer.js";
 import { _touch_loop } from "./touch.js";
-import { AllegroBitmap, AllegroSample } from "./types.js";
+import { makecol } from "./color.js";
+import { BITMAP, SAMPLE } from "./types.js";
+import { screen } from "./bitmap.js";
 
 /// All downloadable objects
-export const _downloadables: (AllegroBitmap | AllegroSample)[] = [];
+export const _downloadables: (BITMAP | SAMPLE)[] = [];
 
 /// registered loop procedure
 let _loopproc = () => {
@@ -82,18 +84,18 @@ export function _progress_check() {
 /// This function is used by ready() to display a simple loading bar on screen. You need to manually specify a dummy function if you don't want loading screen.
 /// @param progress loading progress in 0.0 - 1.0 range
 export function loading_bar(progress: number) {
-  rectfill(canvas, 5, SCREEN_H - 55, SCREEN_W - 10, 50, makecol(0, 0, 0));
+  rectfill(screen, 5, SCREEN_H - 55, SCREEN_W - 10, 50, makecol(0, 0, 0));
   rectfill(
-    canvas,
+    screen,
     10,
     SCREEN_H - 50,
     SCREEN_W - 20,
     40,
     makecol(255, 255, 255)
   );
-  rectfill(canvas, 15, SCREEN_H - 45, SCREEN_W - 30, 30, makecol(0, 0, 0));
+  rectfill(screen, 15, SCREEN_H - 45, SCREEN_W - 30, 30, makecol(0, 0, 0));
   rectfill(
-    canvas,
+    screen,
     20,
     SCREEN_H - 40,
     scaleclamp(progress, 0, 1, 0, SCREEN_W - 40),

@@ -3,7 +3,144 @@
 //@{
 
 import { _allog, log } from "./debug.js";
+import { rest } from "./timer.js";
 
+/// 1.7.1 Installs keyboard handlers
+/// Unlike mouse, keyboard can be installed before initialising graphics, and the handlers will function over the entire website, as opposed to canvas only. After this call, the key[] array can be used to check state of each key. All keys will have their default action disabled, unless specified in the enable_keys array. This means that i.e. backspace won't go back, arrows won't scroll. By default, function keys  (KEY_F1..KEY_F12) are the only ones not suppressed
+/// @param enable_keys array of keys that are not going to have their default action prevented, i.e. [KEY_F5] will enable reloading the website. By default, if this is omitted, function keys are the only ones on the list.
+export function install_keyboard(enable_keys?: number[]) {
+  if (_keyboard_installed) {
+    _allog("Keyboard already installed");
+    return -1;
+  }
+  if (enable_keys) {
+    _enabled_keys = enable_keys;
+  } else {
+    _enabled_keys = _default_enabled_keys;
+  }
+  for (let c = 0; c < 0x80; c += 1) {
+    key[c] = false;
+    pressed[c] = false;
+    released[c] = false;
+  }
+  document.addEventListener("keyup", _keyup);
+  document.addEventListener("keydown", _keydown);
+  _keyboard_installed = true;
+  log("Keyboard installed!");
+  return 0;
+}
+
+/// 1.7.2 Uninstalls keyboard
+export function remove_keyboard() {
+  if (!_keyboard_installed) {
+    _allog("Keyboard not installed");
+    return -1;
+  }
+  document.removeEventListener("keyup", _keyup);
+  document.removeEventListener("keydown", _keydown);
+  _keyboard_installed = false;
+  log("Keyboard removed!");
+  return 0;
+}
+
+/// 1.7.3
+export function install_keyboard_hooks(
+  keypressed: () => void,
+  readkey: () => void
+) {}
+
+/// 1.7.4
+export function poll_keyboard(): number {
+  return 0;
+}
+
+/// 1.7.5
+export function keyboard_needs_poll(): boolean {
+  return false;
+}
+
+/// 1.7.6 Array of flags indicating state of each key.
+/// Available keyboard scan codes are as follows:
+/// *     KEY_A ... KEY_Z,
+/// *     KEY_0 ... KEY_9,
+/// *     KEY_0_PAD ... KEY_9_PAD,
+/// *     KEY_F1 ... KEY_F12,
+/// *     KEY_ESC, KEY_TILDE, KEY_MINUS, KEY_EQUALS, KEY_BACKSPACE, KEY_TAB, KEY_OPENBRACE, KEY_CLOSEBRACE, KEY_ENTER, KEY_COLON, KEY_QUOTE, KEY_BACKSLASH, KEY_COMMA, KEY_STOP, KEY_SLASH, KEY_SPACE,
+/// *     KEY_INSERT, KEY_DEL, KEY_HOME, KEY_END, KEY_PGUP, KEY_PGDN, KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN,
+/// *     KEY_SLASH_PAD, KEY_ASTERISK, KEY_MINUS_PAD, KEY_PLUS_PAD, KEY_DEL_PAD, KEY_ENTER_PAD,
+/// *     KEY_PRTSCR, KEY_PAUSE,
+/// *     KEY_LSHIFT, KEY_RSHIFT, KEY_LCONTROL, KEY_RCONTROL, KEY_ALT, KEY_ALTGR, KEY_LWIN, KEY_RWIN, KEY_MENU, KEY_SCRLOCK, KEY_NUMLOCK, KEY_CAPSLOCK
+/// *     KEY_EQUALS_PAD, KEY_BACKQUOTE, KEY_SEMICOLON, KEY_COMMAND
+export const key: boolean[] = [];
+
+export const key_buffer: number[] = [];
+
+/// 1.7.7
+export const key_shifts: number = 0;
+
+/// 1.7.8
+export function keypressed(): boolean {
+  return key_buffer.length > 0;
+}
+
+/// 1.7.9
+export function readkey(): number {
+  while (key_buffer.length === 0) {
+    rest(1);
+  }
+  const top = key_buffer.pop();
+  if (typeof top === "number") {
+    return top;
+  }
+  return -1;
+}
+
+/// 1.7.10
+export function ureadkey(scancode: number): number {
+  return 0;
+}
+
+/// 1.7.11
+export function scancode_to_ascii(scancode: number) {
+  return scancode;
+}
+
+/// 1.7.12
+export function scancode_to_name(scancode: number) {
+  return scancode;
+}
+
+/// 1.7.13
+export function simulate_keypress(key: number) {}
+
+/// 1.7.14
+export function simulate_ukeypress(key: number, scancode: number) {}
+
+/// 1.7.15
+export function keyboard_callback(key: number) {}
+
+/// 1.7.16
+export function keyboard_ucallback(key: number, scancode: number) {}
+
+/// 1.7.17
+export function keyboard_lowlevel_callback(key: number) {}
+
+/// 1.7.18
+export function set_leds(leds: number) {}
+
+/// 1.7.19
+export function set_keyboard_rate(delay: number, repeat: number) {}
+
+/// 1.7.20
+export function clear_keybuf() {}
+
+/// 1.7.21
+export const three_finger_flag = false;
+
+/// 1.7.22
+export const key_led_flag = false;
+
+/// Internal
 export const KEY_0 = 0x30,
   KEY_0_PAD = 0x60,
   KEY_1 = 0x31,
@@ -109,20 +246,6 @@ export const KEY_0 = 0x30,
   KEY_Y = 0x59,
   KEY_Z = 0x5a;
 
-/// Array of flags indicating state of each key.
-/// Available keyboard scan codes are as follows:
-/// *     KEY_A ... KEY_Z,
-/// *     KEY_0 ... KEY_9,
-/// *     KEY_0_PAD ... KEY_9_PAD,
-/// *     KEY_F1 ... KEY_F12,
-/// *     KEY_ESC, KEY_TILDE, KEY_MINUS, KEY_EQUALS, KEY_BACKSPACE, KEY_TAB, KEY_OPENBRACE, KEY_CLOSEBRACE, KEY_ENTER, KEY_COLON, KEY_QUOTE, KEY_BACKSLASH, KEY_COMMA, KEY_STOP, KEY_SLASH, KEY_SPACE,
-/// *     KEY_INSERT, KEY_DEL, KEY_HOME, KEY_END, KEY_PGUP, KEY_PGDN, KEY_LEFT, KEY_RIGHT, KEY_UP, KEY_DOWN,
-/// *     KEY_SLASH_PAD, KEY_ASTERISK, KEY_MINUS_PAD, KEY_PLUS_PAD, KEY_DEL_PAD, KEY_ENTER_PAD,
-/// *     KEY_PRTSCR, KEY_PAUSE,
-/// *     KEY_LSHIFT, KEY_RSHIFT, KEY_LCONTROL, KEY_RCONTROL, KEY_ALT, KEY_ALTGR, KEY_LWIN, KEY_RWIN, KEY_MENU, KEY_SCRLOCK, KEY_NUMLOCK, KEY_CAPSLOCK
-/// *     KEY_EQUALS_PAD, KEY_BACKQUOTE, KEY_SEMICOLON, KEY_COMMAND
-export const key: boolean[] = [];
-
 /// Array of flags indicating in a key was just pressed since last loop()
 /// Note that this will only work inside loop()
 export const pressed: boolean[] = [];
@@ -153,47 +276,10 @@ export const _default_enabled_keys = [
 /// array of prevent default avoiders
 let _enabled_keys: number[] = [];
 
-/// Installs keyboard handlers
-/// Unlike mouse, keyboard can be installed before initialising graphics, and the handlers will function over the entire website, as opposed to canvas only. After this call, the key[] array can be used to check state of each key. All keys will have their default action disabled, unless specified in the enable_keys array. This means that i.e. backspace won't go back, arrows won't scroll. By default, function keys  (KEY_F1..KEY_F12) are the only ones not suppressed
-/// @param enable_keys array of keys that are not going to have their default action prevented, i.e. [KEY_F5] will enable reloading the website. By default, if this is omitted, function keys are the only ones on the list.
-export function install_keyboard(enable_keys?: number[]) {
-  if (_keyboard_installed) {
-    _allog("Keyboard already installed");
-    return -1;
-  }
-  if (enable_keys) {
-    _enabled_keys = enable_keys;
-  } else {
-    _enabled_keys = _default_enabled_keys;
-  }
-  for (let c = 0; c < 0x80; c += 1) {
-    key[c] = false;
-    pressed[c] = false;
-    released[c] = false;
-  }
-  document.addEventListener("keyup", _keyup);
-  document.addEventListener("keydown", _keydown);
-  _keyboard_installed = true;
-  log("Keyboard installed!");
-  return 0;
-}
-
-/// Uninstalls keyboard
-export function remove_keyboard() {
-  if (!_keyboard_installed) {
-    _allog("Keyboard not installed");
-    return -1;
-  }
-  document.removeEventListener("keyup", _keyup);
-  document.removeEventListener("keydown", _keydown);
-  _keyboard_installed = false;
-  log("Keyboard removed!");
-  return 0;
-}
-
 /// Internal keyboard loop
 export function _keyboard_loop() {
   if (_keyboard_installed) {
+    key_buffer.length = 0;
     for (let c = 0; c < 0x80; c += 1) {
       pressed[c] = false;
       released[c] = false;
@@ -206,6 +292,7 @@ export function _keydown(e: KeyboardEvent) {
   const code = key[e.keyCode];
   if (typeof code !== "undefined" && !code) pressed[e.keyCode] = true;
   key[e.keyCode] = true;
+  key_buffer.push(e.keyCode << 8);
   if (!_enabled_keys.includes(e.keyCode)) e.preventDefault();
 }
 

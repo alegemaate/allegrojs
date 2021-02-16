@@ -4,12 +4,12 @@
 
 import { _downloadables } from "./core.js";
 import { log } from "./debug.js";
-import { AllegroSample } from "./types.js";
+import { SAMPLE } from "./types.js";
 
 let _volume = 1.0;
 
 /// Loaded samples
-const _samples: AllegroSample[] = [];
+const _samples: SAMPLE[] = [];
 
 /// Install sound
 /// @todo: stuff here? AudioContext? compatibility first!
@@ -37,7 +37,7 @@ export function get_volume() {
 export function load_sample(filename: string) {
   const audio = document.createElement("audio");
   audio.src = filename;
-  const sample: AllegroSample = {
+  const sample: SAMPLE = {
     element: audio,
     file: filename,
     volume: 1.0,
@@ -69,7 +69,7 @@ export function destroy_sample(filename: string) {
 /// @param freq speed, 1.0 is normal
 /// @param loop loop or not to loop
 export function play_sample(
-  sample: AllegroSample,
+  sample: SAMPLE,
   vol = 1.0,
   freq = 1.0,
   loop = false
@@ -86,7 +86,7 @@ export function play_sample(
 /// @param freq speed, 1.0 is normal
 /// @param loop loop or not to loop
 export function adjust_sample(
-  sample: AllegroSample,
+  sample: SAMPLE,
   vol: number,
   freq: number,
   loop: boolean
@@ -100,7 +100,7 @@ export function adjust_sample(
 /// Stops playing
 /// Also resets position.
 /// @param sample sample to be stopped
-export function stop_sample(sample: AllegroSample) {
+export function stop_sample(sample: SAMPLE) {
   sample.element.pause();
   sample.element.currentTime = 0;
 }
@@ -108,7 +108,7 @@ export function stop_sample(sample: AllegroSample) {
 /// Pauses playing
 /// Also doesn't reset position. Use play_sample() to resume.
 /// @param sample sample to be stopped
-export function pause_sample(sample: AllegroSample) {
+export function pause_sample(sample: SAMPLE) {
   sample.element.pause();
 }
 

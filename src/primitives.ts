@@ -2,139 +2,115 @@
 /// @name DRAWING PRIMITIVES
 // @{
 
+import { getr, getg, getb, geta } from "./color.js";
 import { PI2, RAD } from "./math.js";
-import { AllegroBitmap, AllegroCanvas } from "./types.js";
+import { BITMAP, ALLEGRO_CANVAS } from "./types.js";
 
-/// Helper for setting fill style
-export function _fillstyle(
-  bitmap: AllegroBitmap | AllegroCanvas,
+/// 1.14.1
+/// Clears bitmap to transparent black.
+/// Fills the entire bitmap with 0 value, which represents transparent black.
+/// @param bitmap bitmap to be cleared
+export function clear_bitmap(bitmap: BITMAP | ALLEGRO_CANVAS | undefined) {
+  clear_to_color(bitmap, 0xff000000);
+}
+
+/// 1.14.2
+/// Clears bitmap to specified colour.
+/// Fills the entire bitmap with colour value.
+/// @param bitmap bitmap to be cleared
+/// @param colour colour in 0xAARRGGBB format
+export function clear_to_color(
+  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
   colour: number
 ) {
-  bitmap.context.fillStyle =
-    "rgba(" +
-    getr(colour) +
-    "," +
-    getg(colour) +
-    "," +
-    getb(colour) +
-    "," +
-    getaf(colour) +
-    ")";
+  if (!bitmap) {
+    return;
+  }
+  bitmap.context.clearRect(0, 0, bitmap.w, bitmap.h);
+  _fillstyle(bitmap, colour);
+  bitmap.context.fillRect(0, 0, bitmap.w, bitmap.h);
 }
 
-/// Helper for setting stroke style
-export function _strokestyle(
-  bitmap: AllegroBitmap | AllegroCanvas,
-  colour: number,
-  width = 1
+/// 1.14.3 Gets pixel colour from bitmap
+/// Reads pixel from bitmap at given coordinates. This is probably super slow, and shouldn't be used inside loops.
+/// @param bitmap bitmap object to update
+/// @param x x coordinate of pixel
+/// @param y y coordinate of pixel
+/// @param colour colour in 0xAARRGGBB format
+export function putpixel(
+  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
+  x: number,
+  y: number,
+  c: number
 ) {
-  bitmap.context.lineWidth = width;
-  bitmap.context.strokeStyle =
-    "rgba(" +
-    getr(colour) +
-    "," +
-    getg(colour) +
-    "," +
-    getb(colour) +
-    "," +
-    getaf(colour) +
-    ")";
+  if (!bmp) {
+    return;
+  }
+  _fillstyle(bmp, c);
+  bmp.context.fillRect(x, y, 1, 1);
 }
 
-/// Creates a 0xAARRGGBB from values
-/// Overdrive is not permitted, so values over 255 (0xff) will get clipped.
-/// @param r red component in 0-255 range
-/// @param g green component in 0-255 range
-/// @param b blue  component in 0-255 range
-/// @param a alpha component in 0-255 range, defaults to 255 (fully opaque)
-/// @return colour in 0xAARRGGBB format
-export function makecol(r: number, g: number, b: number, a = 255) {
-  return (a << 24) | ((r & 0xff) << 16) | ((g & 0xff) << 8) | (b & 0xff);
+/// 1.14.4
+export function _putpixel(
+  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
+  x: number,
+  y: number,
+  c: number
+) {
+  return putpixel(bmp, x, y, c);
 }
 
-/// Creates 0xAARRGGBB from values
-/// This is a float version of makecol, where all components should be in 0.0-1.0 range.
-/// @param r red component in 0.0-1.0 range
-/// @param g green component in 0.0-1.0 range
-/// @param b blue  component in 0.0-1.0 range
-/// @param a alpha component in 0.0-1.0 range, defaults to 1.0 (fully opaque)
-/// @return colour in 0xAARRGGBB format
-export function makecolf(r: number, g: number, b: number, a = 1.0) {
-  return makecol(r * 255, g * 255, b * 255, a * 255);
+export function _putpixel15(
+  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
+  x: number,
+  y: number,
+  c: number
+) {
+  return putpixel(bmp, x, y, c);
 }
 
-/// Gets red bits from 0xRRGGBB
-/// This one does clip.
-/// @param colour colour in 0xAARRGGBB format
-/// @return red component in 0-255 range
-export function getr(colour: number) {
-  return (colour >> 16) & 0xff;
+export function _putpixel16(
+  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
+  x: number,
+  y: number,
+  c: number
+) {
+  return putpixel(bmp, x, y, c);
 }
 
-/// Gets red bits from 0xRRGGBB
-/// This one too.
-/// @param colour colour in 0xAARRGGBB format
-/// @return green component in 0-255 range
-export function getg(colour: number) {
-  return (colour >> 8) & 0xff;
+export function _putpixel24(
+  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
+  x: number,
+  y: number,
+  c: number
+) {
+  return putpixel(bmp, x, y, c);
 }
 
-/// Gets red bits from 0xRRGGBB
-/// This one clips as well.
-/// @param colour colour in 0xAARRGGBB format
-/// @return blue component in 0-255 range
-export function getb(colour: number) {
-  return colour & 0xff;
+export function _putpixel32(
+  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
+  x: number,
+  y: number,
+  c: number
+) {
+  return putpixel(bmp, x, y, c);
 }
 
-/// Gets alpha bits from 0xAARRGGBB
-/// This one doesn't.
-/// @param colour colour in 0xAARRGGBB format
-/// @return alpha component in 0-255 range
-export function geta(colour: number) {
-  return colour >>> 24;
-}
-
-/// Float (0.0-1.0) version of getr()
-/// @param colour colour in 0xAARRGGBB format
-/// @return red component in 0.0-1.0 range
-export function getrf(colour: number) {
-  return (colour >> 16) & (0xff / 255.0);
-}
-
-/// Float (0.0-1.0) version of getg()
-/// @param colour colour in 0xAARRGGBB format
-/// @return green component in 0.0-1.0 range
-export function getgf(colour: number) {
-  return (colour >> 8) & (0xff / 255.0);
-}
-
-/// Float (0.0-1.0) version of getb()
-/// @param colour colour in 0xAARRGGBB format
-/// @return blue component in 0.0-1.0 range
-export function getbf(colour: number) {
-  return colour & (0xff / 255.0);
-}
-
-/// Float (0.0-1.0) version of geta()
-/// @param colour colour in 0xAARRGGBB format
-/// @return alpha component in 0.0-1.0 range
-export function getaf(colour: number) {
-  return (colour >>> 24) / 255.0;
-}
-
-/// Gets pixel colour from bitmap
+/// 1.14.5 Gets pixel colour from bitmap
 /// Reads pixel from bitmap at given coordinates. This is probably super slow, and shouldn't be used inside loops.
 /// @param bitmap bitmap object to poll
 /// @param x x coordinate of pixel
 /// @param y y coordinate of pixel
 /// @return colour in 0xAARRGGBB format
 export function getpixel(
-  bitmap: AllegroBitmap | AllegroCanvas,
+  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
   x: number,
   y: number
 ) {
-  const { data } = bitmap.context.getImageData(x, y, 1, 1);
+  if (!bmp) {
+    return;
+  }
+  const { data } = bmp.context.getImageData(x, y, 1, 1);
 
   return (
     ((data[3] ?? 0) << 24) |
@@ -144,66 +120,47 @@ export function getpixel(
   );
 }
 
-/// Gets pixel colour from bitmap
-/// Reads pixel from bitmap at given coordinates. This is probably super slow, and shouldn't be used inside loops.
-/// @param bitmap bitmap object to update
-/// @param x x coordinate of pixel
-/// @param y y coordinate of pixel
-/// @param colour colour in 0xAARRGGBB format
-export function putpixel(
-  bitmap: AllegroBitmap | AllegroCanvas,
+export function _getpixel(
+  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
   x: number,
-  y: number,
-  colour: number
+  y: number
 ) {
-  _fillstyle(bitmap, colour);
-  bitmap.context.fillRect(x, y, 1, 1);
+  return getpixel(bmp, x, y);
 }
 
-/// Clears bitmap to transparent black.
-/// Fills the entire bitmap with 0 value, which represents transparent black.
-/// @param bitmap bitmap to be cleared
-export function clear_bitmap(bitmap: AllegroBitmap) {
-  bitmap.context.clearRect(0, 0, bitmap.w, bitmap.h);
-}
-
-/// Clears bitmap to specified colour.
-/// Fills the entire bitmap with colour value.
-/// @param bitmap bitmap to be cleared
-/// @param colour colour in 0xAARRGGBB format
-export function clear_to_color(
-  bitmap: AllegroBitmap | AllegroCanvas,
-  colour: number
+export function _getpixel15(
+  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
+  x: number,
+  y: number
 ) {
-  bitmap.context.clearRect(0, 0, bitmap.w, bitmap.h);
-  _fillstyle(bitmap, colour);
-  bitmap.context.fillRect(0, 0, bitmap.w, bitmap.h);
+  return getpixel(bmp, x, y);
 }
 
-/// Draws a line.
-/// Draws a line from one point to another using given colour.
-/// @param bitmap to be drawn to
-/// @param x1,y1 start point coordinates
-/// @param x2,y2 end point coordinates
-/// @param colour colour in 0xAARRGGBB format
-/// @param width line width
-export function line(
-  bitmap: AllegroBitmap | AllegroCanvas,
-  x1: number,
-  y1: number,
-  x2: number,
-  y2: number,
-  colour: number,
-  width: number
+export function _getpixel16(
+  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
+  x: number,
+  y: number
 ) {
-  _strokestyle(bitmap, colour, width);
-  bitmap.context.beginPath();
-  bitmap.context.moveTo(x1, y1);
-  bitmap.context.lineTo(x2, y2);
-  bitmap.context.stroke();
+  return getpixel(bmp, x, y);
 }
 
-/// Draws a vertical line.
+export function _getpixel24(
+  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
+  x: number,
+  y: number
+) {
+  return getpixel(bmp, x, y);
+}
+
+export function _getpixel32(
+  bmp: BITMAP | ALLEGRO_CANVAS | undefined,
+  x: number,
+  y: number
+) {
+  return getpixel(bmp, x, y);
+}
+
+/// 1.14.7 Draws a vertical line.
 /// Draws a vertical line from one point to another using given colour. Probably slightly faster than line() method, since this one uses rectfill() to draw the line.
 /// @param bitmap to be drawn to
 /// @param x column to draw the line to
@@ -211,18 +168,21 @@ export function line(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width (defaults to 1)
 export function vline(
-  bitmap: AllegroBitmap | AllegroCanvas,
+  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
   x: number,
   y1: number,
   y2: number,
   colour: number,
   width = 1
 ) {
+  if (!bitmap) {
+    return;
+  }
   _fillstyle(bitmap, colour);
   bitmap.context.fillRect(x - width / 2, y1, width, y2 - y1);
 }
 
-/// Draws a horizontal line.
+/// 1.14.8 Draws a horizontal line.
 /// Draws a horizontal line from one point to another using given colour. Probably slightly faster than line() method, since this one uses rectfill() to draw the line.
 /// @param bitmap to be drawn to
 /// @param y row to draw the line to
@@ -230,18 +190,68 @@ export function vline(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width (defaults to 1)
 export function hline(
-  bitmap: AllegroBitmap | AllegroCanvas,
+  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
   x1: number,
   y: number,
   x2: number,
   colour: number,
   width = 1
 ) {
+  if (!bitmap) {
+    return;
+  }
   _fillstyle(bitmap, colour);
   bitmap.context.fillRect(x1, y - width / 2, x2 - x1, width);
 }
 
-/// Draws a triangle.
+/// 1.14.9
+export function do_line(
+  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  x1: number,
+  y: number,
+  x2: number,
+  width = 1,
+  proc: (bmp: BITMAP, x: number, y: number, d: number) => void
+) {}
+
+/// 1.14.10 Draws a line.
+/// Draws a line from one point to another using given colour.
+/// @param bitmap to be drawn to
+/// @param x1,y1 start point coordinates
+/// @param x2,y2 end point coordinates
+/// @param colour colour in 0xAARRGGBB format
+/// @param width line width
+export function line(
+  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  colour: number
+) {
+  if (!bitmap) {
+    return;
+  }
+  _strokestyle(bitmap, colour, 1);
+  bitmap.context.beginPath();
+  bitmap.context.moveTo(x1, y1);
+  bitmap.context.lineTo(x2, y2);
+  bitmap.context.stroke();
+}
+
+/// 1.14.11
+export function fastline(
+  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  x1: number,
+  y1: number,
+  x2: number,
+  y2: number,
+  colour: number
+) {
+  line(bitmap, x1, y1, x2, y2, colour);
+}
+
+/// 1.14.12 Draws a triangle.
 /// Draws a triangle using three coordinates. The triangle is not filled.
 /// @param bitmap to be drawn to
 /// @param x1,y1 first point coordinates
@@ -250,34 +260,7 @@ export function hline(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width
 export function triangle(
-  bitmap: AllegroBitmap | AllegroCanvas,
-  x1: number,
-  y1: number,
-  x2: number,
-  y2: number,
-  x3: number,
-  y3: number,
-  colour: number,
-  width: number
-) {
-  _strokestyle(bitmap, colour, width);
-  bitmap.context.beginPath();
-  bitmap.context.moveTo(x1, y1);
-  bitmap.context.lineTo(x2, y2);
-  bitmap.context.lineTo(x3, y3);
-  bitmap.context.closePath();
-  bitmap.context.stroke();
-}
-
-/// Draws a triangle.
-/// Draws a triangle using three coordinates. The triangle is filled.
-/// @param bitmap to be drawn to
-/// @param x1,y1 first point coordinates
-/// @param x2,y2 second point coordinates
-/// @param x3,y3 third point coordinates
-/// @param colour colour in 0xAARRGGBB format
-export function trianglefill(
-  bitmap: AllegroBitmap | AllegroCanvas,
+  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
   x1: number,
   y1: number,
   x2: number,
@@ -286,6 +269,9 @@ export function trianglefill(
   y3: number,
   colour: number
 ) {
+  if (!bitmap) {
+    return;
+  }
   _fillstyle(bitmap, colour);
   bitmap.context.beginPath();
   bitmap.context.moveTo(x1, y1);
@@ -295,7 +281,7 @@ export function trianglefill(
   bitmap.context.fill();
 }
 
-/// Draws a polygon.
+/// 1.14.13 Draws a polygon.
 /// Draws a polygon using three coordinates. The polygon is not filled.
 /// @param bitmap to be drawn to
 /// @param vertices number of vertices to draw
@@ -303,34 +289,14 @@ export function trianglefill(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width
 export function polygon(
-  bitmap: AllegroBitmap | AllegroCanvas,
-  vertices: number,
-  points: number[],
-  colour: number,
-  width: number
-) {
-  _strokestyle(bitmap, colour, width);
-  bitmap.context.beginPath();
-  for (let c = 0; c < vertices; c += 1) {
-    if (c) bitmap.context.lineTo(points[c * 2] ?? 0, points[c * 2 + 1] ?? 0);
-    else bitmap.context.moveTo(points[c * 2] ?? 0, points[c * 2 + 1] ?? 0);
-  }
-  bitmap.context.closePath();
-  bitmap.context.stroke();
-}
-
-/// Draws a polygon.
-/// Draws a polygon using three coordinates. The polygon is filled.
-/// @param bitmap to be drawn to
-/// @param vertices number of vertices to draw
-/// @param points array containing vertices*2 elements of polygon coordinates in [x1,y1,x2,y2,x3...] format
-/// @param colour colour in 0xAARRGGBB format
-export function polygonfill(
-  bitmap: AllegroBitmap | AllegroCanvas,
+  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
   vertices: number,
   points: number[],
   colour: number
 ) {
+  if (!bitmap) {
+    return;
+  }
   _fillstyle(bitmap, colour);
   bitmap.context.beginPath();
   for (let c = 0; c < vertices; c += 1) {
@@ -341,7 +307,7 @@ export function polygonfill(
   bitmap.context.fill();
 }
 
-/// Draws a rectangle.
+/// 1.14.14 Draws a rectangle.
 /// Draws a rectangle from one point to another using given colour. The rectangle is not filled. Opposed to traditional allegro approach, width and height have to be provided, not an end point.
 /// @param bitmap to be drawn to
 /// @param x1,y1 start point coordinates
@@ -349,7 +315,7 @@ export function polygonfill(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width
 export function rect(
-  bitmap: AllegroBitmap | AllegroCanvas,
+  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
   x1: number,
   y1: number,
   w: number,
@@ -357,29 +323,45 @@ export function rect(
   colour: number,
   width: number
 ) {
+  if (!bitmap) {
+    return;
+  }
   _strokestyle(bitmap, colour, width);
   bitmap.context.strokeRect(x1, y1, w, h);
 }
 
-/// Draws a rectangle.
+/// 1.14.15 Draws a filled ectangle.
 /// Draws a rectangle from one point to another using given colour. The rectangle is filled. Opposed to traditional allegro approach, width and height have to be provided, not an end point.
 /// @param bitmap to be drawn to
 /// @param x1,y1 start point coordinates
 /// @param w,h width and height
 /// @param colour colour in 0xAARRGGBB format
 export function rectfill(
-  bitmap: AllegroBitmap | AllegroCanvas,
+  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
   x1: number,
   y1: number,
   w: number,
   h: number,
   colour: number
 ) {
+  if (!bitmap) {
+    return;
+  }
   _fillstyle(bitmap, colour);
   bitmap.context.fillRect(x1, y1, w, h);
 }
 
-/// Draws a circle.
+/// 1.14.16
+export function do_circle(
+  bmp: BITMAP | undefined,
+  x: number,
+  y: number,
+  radius: number,
+  d: number,
+  proc: (bmp: BITMAP, x: number, y: number, d: number) => void
+) {}
+
+/// 1.14.17 Draws a circle.
 /// Draws a circle at specified centre point and radius. The circle is not filled
 /// @param bitmap to be drawn to
 /// @param x,y centre point coordinates
@@ -387,91 +369,56 @@ export function rectfill(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width
 export function circle(
-  bitmap: AllegroBitmap | AllegroCanvas,
+  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
   x: number,
   y: number,
   radius: number,
   colour: number,
   width: number
 ) {
+  if (!bitmap) {
+    return;
+  }
   _strokestyle(bitmap, colour, width);
   bitmap.context.beginPath();
   bitmap.context.arc(x, y, radius, 0, PI2);
   bitmap.context.stroke();
 }
 
-/// Draws a circle.
+/// 1.14.18 Draws a circle.
 /// Draws a circle at specified centre point and radius. The circle is filled
 /// @param bitmap to be drawn to
 /// @param x,y centre point coordinates
 /// @param r circle radius
 /// @param colour colour in 0xAARRGGBB format
 export function circlefill(
-  bitmap: AllegroBitmap | AllegroCanvas,
+  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
   x: number,
   y: number,
   radius: number,
   colour: number
 ) {
+  if (!bitmap) {
+    return;
+  }
   _fillstyle(bitmap, colour);
   bitmap.context.beginPath();
   bitmap.context.arc(x, y, radius, 0, PI2);
   bitmap.context.fill();
 }
 
-/// Draws a arc.
-/// Draws a circle at specified centre point and radius. The arc is not filled
-/// @param bitmap to be drawn to
-/// @param x,y centre point coordinates
-/// @param ang1,ang2 angles to draw the arc between measured anticlockwise from the positive x axis in degrees
-/// @param r radius
-/// @param colour colour in 0xAARRGGBB format
-/// @param width line width
-export function arc(
-  bitmap: AllegroBitmap | AllegroCanvas,
+/// 1.14.19
+export function do_ellipse(
+  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
   x: number,
   y: number,
-  ang1: number,
-  ang2: number,
-  r: number,
-  colour: number,
-  width: number
-) {
-  _strokestyle(bitmap, colour, width);
-  bitmap.context.beginPath();
-  if (ang1 > ang2) {
-    bitmap.context.arc(x, y, r, RAD(ang1), RAD(ang2));
-  } else {
-    bitmap.context.arc(x, y, r, RAD(ang1), RAD(ang2));
-  }
-  bitmap.context.stroke();
-}
+  rx: number,
+  ry: number,
+  d: number,
+  proc: (bmp: BITMAP, x: number, y: number, d: number) => void
+) {}
 
-/// Draws a arc.
-/// Draws a circle at specified centre point and radius. The arc is filled
-/// @param bitmap to be drawn to
-/// @param x,y centre point coordinates
-/// @param ang1,ang2 angles to draw the arc between measured anticlockwise from the positive x axis in degrees
-/// @param r radius
-/// @param colour colour in 0xAARRGGBB format
-export function arcfill(
-  bitmap: AllegroBitmap | AllegroCanvas,
-  x: number,
-  y: number,
-  ang1: number,
-  ang2: number,
-  r: number,
-  colour: number
-) {
-  _fillstyle(bitmap, colour);
-  bitmap.context.beginPath();
-  if (ang1 > ang2) {
-    bitmap.context.arc(x, y, r, RAD(ang1), RAD(ang2));
-  } else {
-    bitmap.context.arc(x, y, r, RAD(ang1), RAD(ang2));
-  }
-  bitmap.context.fill();
-}
+/// 1.14.20
 
 /// Draws an ellipse.
 /// Draws an ellipse at specified centre point and radius. The ellipse is not filled
@@ -481,7 +428,7 @@ export function arcfill(
 /// @param colour colour in 0xAARRGGBB format
 /// @param width line width
 export function ellipse(
-  bitmap: AllegroBitmap | AllegroCanvas,
+  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
   x: number,
   y: number,
   rx: number,
@@ -489,6 +436,9 @@ export function ellipse(
   colour: number,
   width: number
 ) {
+  if (!bitmap) {
+    return;
+  }
   _strokestyle(bitmap, colour, width);
   bitmap.context.save();
   bitmap.context.translate(x, y);
@@ -499,20 +449,23 @@ export function ellipse(
   bitmap.context.stroke();
 }
 
-/// Draws an ellipse.
+/// 1.14.21 Draws an ellipse.
 /// Draws an ellipse at specified centre point and radius. The ellipse is filled
 /// @param bitmap to be drawn to
 /// @param x,y centre point coordinates
 /// @param rx,ry ellipse radius in x and y
 /// @param colour colour in 0xAARRGGBB format
 export function ellipsefill(
-  bitmap: AllegroBitmap | AllegroCanvas,
+  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
   x: number,
   y: number,
   rx: number,
   ry: number,
   colour: number
 ) {
+  if (!bitmap) {
+    return;
+  }
   _fillstyle(bitmap, colour);
   bitmap.context.save();
   bitmap.context.translate(x, y);
@@ -521,6 +474,114 @@ export function ellipsefill(
   bitmap.context.arc(0, 0, 1, 0, PI2);
   bitmap.context.restore();
   bitmap.context.fill();
+}
+
+/// 1.14.22
+export function do_arc(
+  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  x: number,
+  y: number,
+  ang1: number,
+  ang2: number,
+  r: number,
+  d: number,
+  proc: (bmp: BITMAP, x: number, y: number, d: number) => void
+) {}
+
+/// 1.14.23 Draws a arc.
+/// Draws a circle at specified centre point and radius. The arc is not filled
+/// @param bitmap to be drawn to
+/// @param x,y centre point coordinates
+/// @param ang1,ang2 angles to draw the arc between measured anticlockwise from the positive x axis in degrees
+/// @param r radius
+/// @param colour colour in 0xAARRGGBB format
+/// @param width line width
+export function arc(
+  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  x: number,
+  y: number,
+  ang1: number,
+  ang2: number,
+  r: number,
+  colour: number
+) {
+  if (!bitmap) {
+    return;
+  }
+  _strokestyle(bitmap, colour, 1);
+  bitmap.context.beginPath();
+  if (ang1 > ang2) {
+    bitmap.context.arc(x, y, r, RAD(ang1), RAD(ang2));
+  } else {
+    bitmap.context.arc(x, y, r, RAD(ang1), RAD(ang2));
+  }
+  bitmap.context.stroke();
+}
+
+/// 1.14.24
+export function calc_spline(
+  points: number[],
+  npts: number,
+  x: number,
+  y: number
+) {}
+
+/// 1.14.25
+export function spline(
+  bmp: BITMAP | undefined,
+  points: number[],
+  color: number
+) {}
+
+/// 1.14.26
+export function floodfill(
+  bmp: BITMAP | undefined,
+  x: number,
+  y: number,
+  color: number
+) {}
+
+/// INTERNAL
+/// Helper for setting fill style
+export function _fillstyle(
+  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  colour: number
+) {
+  if (!bitmap) {
+    return;
+  }
+  bitmap.context.fillStyle =
+    "rgba(" +
+    getr(colour) +
+    "," +
+    getg(colour) +
+    "," +
+    getb(colour) +
+    "," +
+    geta(colour) / 255 +
+    ")";
+}
+
+/// Helper for setting stroke style
+export function _strokestyle(
+  bitmap: BITMAP | ALLEGRO_CANVAS | undefined,
+  colour: number,
+  width = 1
+) {
+  if (!bitmap) {
+    return;
+  }
+  bitmap.context.lineWidth = width;
+  bitmap.context.strokeStyle =
+    "rgba(" +
+    getr(colour) +
+    "," +
+    getg(colour) +
+    "," +
+    getb(colour) +
+    "," +
+    geta(colour) / 255 +
+    ")";
 }
 
 //@}

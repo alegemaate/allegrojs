@@ -1,140 +1,20 @@
-export { create_bitmap, load_bitmap, load_bmp, load_sheet } from "./bitmap.js";
-export { END_OF_MAIN, allegro_init, install_allegro } from "./config.js";
-export { ready, loop, loading_bar } from "./core.js";
-export { enable_debug, log } from "./debug.js";
-export {
-  create_font,
-  load_base64_font,
-  load_font,
-  textout,
-  textout_centre,
-  textout_right,
-} from "./font.js";
-export { SCREEN_H, SCREEN_W, canvas, font, set_gfx_mode } from "./graphics.js";
-export {
-  install_keyboard,
-  remove_keyboard,
-  key,
-  pressed,
-  released,
-} from "./keyboard.js";
-export {
-  DEG,
-  PI,
-  PI2,
-  PI_2,
-  PI_3,
-  PI_4,
-  RAD,
-  abs,
-  angle,
-  anglediff,
-  clamp,
-  distance,
-  distance2,
-  dot,
-  floor,
-  frand,
-  lerp,
-  linedist,
-  rand,
-  rand32,
-  scale,
-  scaleclamp,
-  sgn,
-} from "./math.js";
-export {
-  hide_mouse,
-  install_mouse,
-  mouse_b,
-  mouse_x,
-  mouse_y,
-  mouse_z,
-  mouse_pressed,
-  mouse_released,
-  remove_mouse,
-  show_mouse,
-  mouse_mx,
-  mouse_my,
-  mouse_mz,
-} from "./mouse.js";
-export {
-  arc,
-  arcfill,
-  circle,
-  circlefill,
-  clear_bitmap,
-  clear_to_color,
-  ellipse,
-  ellipsefill,
-  geta,
-  getaf,
-  getb,
-  getbf,
-  getg,
-  getgf,
-  getpixel,
-  getr,
-  getrf,
-  hline,
-  line,
-  makecol,
-  makecolf,
-  polygon,
-  polygonfill,
-  putpixel,
-  rect,
-  rectfill,
-  triangle,
-  trianglefill,
-  vline,
-} from "./primitives.js";
-export {
-  adjust_sample,
-  destroy_sample,
-  get_volume,
-  install_sound,
-  load_sample,
-  pause_sample,
-  play_sample,
-  set_volume,
-  stop_sample,
-} from "./sample.js";
-export {
-  blit,
-  draw_sprite,
-  pivot_scaled_sprite,
-  pivot_sprite,
-  rotate_scaled_sprite,
-  rotate_sprite,
-  scaled_sprite,
-  simple_blit,
-  stretch_blit,
-} from "./sprites.js";
-export {
-  BPM_TO_TIMER,
-  BPS_TO_TIMER,
-  MSEC_TO_TIMER,
-  SECS_TO_TIMER,
-  install_int,
-  install_int_ex,
-  install_timer,
-  remove_all_ints,
-  remove_int,
-  time,
-} from "./timer.js";
-export {
-  touch,
-  touch_pressed,
-  touch_released,
-  install_touch,
-  remove_touch,
-} from "./touch.js";
-export {
-  AllegroBitmap,
-  AllegroCanvas,
-  AllegroFont,
-  AllegroSample,
-  AllegroTimer,
-  AllegroTouchEvent,
-} from "./types.js";
+export * from "./bitmap.js";
+export * from "./clib.js";
+export * from "./color.js";
+export * from "./config.js";
+export * from "./configuration.js";
+export * from "./core.js";
+export * from "./debug.js";
+export * from "./font.js";
+export * from "./graphics.js";
+export * from "./keyboard.js";
+export * from "./math.js";
+export * from "./mouse.js";
+export * from "./palette.js";
+export * from "./primitives.js";
+export * from "./sample.js";
+export * from "./sprites.js";
+export * from "./timer.js";
+export * from "./touch.js";
+export * from "./types.js";
+export * from "./unicode.js";

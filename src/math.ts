@@ -47,6 +47,10 @@ export function rand() {
   return Math.floor(65536 * Math.random());
 }
 
+export function AL_RAND() {
+  return rand();
+}
+
 /// Returns a random number from -2147483648 to 2147483647
 /// Result is always integer. Use abs() if you only want positive values.
 /// @return a random number in -2147483648-2147483648 inclusive range

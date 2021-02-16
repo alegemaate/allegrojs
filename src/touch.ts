@@ -2,20 +2,20 @@
 //@{
 
 import { log, _allog } from "./debug.js";
-import { canvas } from "./graphics.js";
-import { AllegroTouchEvent } from "./types.js";
+import { screen } from "./bitmap.js";
+import { ALLEGRO_TOUCH_EVENT } from "./types.js";
 
 /// is touch installed
 export let _touch_installed = false;
 
-/// Array of AllegroTouchEvent holding the currently held touches
-export const touch: AllegroTouchEvent[] = [];
+/// Array of ALLEGRO_TOUCH_EVENT holding the currently held touches
+export const touch: ALLEGRO_TOUCH_EVENT[] = [];
 
-/// Array of AllegroTouchEvent holding the just started touches
-export const touch_pressed: AllegroTouchEvent[] = [];
+/// Array of ALLEGRO_TOUCH_EVENT holding the just started touches
+export const touch_pressed: ALLEGRO_TOUCH_EVENT[] = [];
 
-/// Array of AllegroTouchEvent holding the just finished touches
-export const touch_released: AllegroTouchEvent[] = [];
+/// Array of ALLEGRO_TOUCH_EVENT holding the just finished touches
+export const touch_released: ALLEGRO_TOUCH_EVENT[] = [];
 
 /// Installs touch support
 /// Installs handlers for touch events. After calling this, touch* arrays will get populated with multitouch data maximum touch points depend on the device. Four is usually a safe option.
@@ -24,10 +24,10 @@ export function install_touch() {
     _allog("Touch already installed");
     return -1;
   }
-  canvas.canvas.addEventListener("touchstart", _touchstart);
-  canvas.canvas.addEventListener("touchend", _touchend);
-  canvas.canvas.addEventListener("touchcancel", _touchend);
-  canvas.canvas.addEventListener("touchmove", _touchmove);
+  screen.canvas.addEventListener("touchstart", _touchstart);
+  screen.canvas.addEventListener("touchend", _touchend);
+  screen.canvas.addEventListener("touchcancel", _touchend);
+  screen.canvas.addEventListener("touchmove", _touchmove);
   _touch_installed = true;
   log("Touch installed!");
   return 0;
@@ -40,10 +40,10 @@ export function remove_touch() {
     _allog("Touch not installed");
     return -1;
   }
-  canvas.canvas.removeEventListener("touchstart", _touchstart);
-  canvas.canvas.removeEventListener("touchend", _touchend);
-  canvas.canvas.removeEventListener("touchcancel", _touchend);
-  canvas.canvas.removeEventListener("touchmove", _touchmove);
+  screen.canvas.removeEventListener("touchstart", _touchstart);
+  screen.canvas.removeEventListener("touchend", _touchend);
+  screen.canvas.removeEventListener("touchcancel", _touchend);
+  screen.canvas.removeEventListener("touchmove", _touchmove);
   _touch_installed = false;
   log("Touch removed!");
   return 0;
@@ -79,7 +79,7 @@ export function _touchstart(e: TouchEvent) {
     const point = e.changedTouches.item(c);
 
     if (point) {
-      const t: AllegroTouchEvent = {
+      const t: ALLEGRO_TOUCH_EVENT = {
         sx: point.clientX - rect.left,
         sy: point.clientY - rect.top,
         mx: 0,

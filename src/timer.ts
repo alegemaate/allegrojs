@@ -2,10 +2,91 @@
 //@{
 
 import { log } from "./debug.js";
-import { AllegroTimer } from "./types.js";
+import { TIMER } from "./types.js";
 
-/// holds all currently installed timers
-let _installed_timers: AllegroTimer[] = [];
+/// 1.6.1
+/// Does nothing.
+export function install_timer(): number {
+  return 1;
+}
+
+/// 1.6.2
+export function remove_timer() {}
+
+/// 1.6.3 Installs interrupt function.
+/// Installs a user timer handler, with the speed given as the number of milliseconds between ticks. This is the same thing as install_int_ex(proc, MSEC_TO_TIMER(speed)). Calling again this routine with the same timer handler as parameter allows you to adjust its speed.
+/// @param procedure function to be called
+/// @param speed execution interval in msec
+export function install_int(proc: () => void, speed: number) {
+  return install_int_ex(proc, MSEC_TO_TIMER(speed));
+}
+
+/// 1.6.4 Installs interrupt function.
+/// With this one, you must use helper functions to set the interval in the second argument. The lowest interval is 1 msec, but you probably don't want to go below 17 msec. Suggested values are BPS_TO_TIMER(30) or BPS_TO_TIMER(60). It cannot be used to alter previously installed interrupt function as well.
+/// * SECS_TO_TIMER(secs) - seconds
+/// * MSEC_TO_TIMER(msec) - milliseconds (1/1000th)
+/// * BPS_TO_TIMER(bps) - beats per second
+/// * BPM_TO_TIMER(bpm) - beats per minute
+/// @param procedure function to be called
+/// @param speed execution interval
+export function install_int_ex(proc: () => void, speed: number) {
+  const timer_id = window.setInterval(proc, speed);
+  _installed_timers.push({ timer: proc, id: timer_id });
+  log("Added insterrupt #" + timer_id + " at " + speed + "msec isntervals!");
+}
+
+/// 1.6.5
+export function LOCK_VARIABLE(variable_name: string) {}
+
+/// 1.6.6
+export function LOCK_FUNCTION(function_name: string) {}
+
+/// 1.6.7
+export function END_OF_FUNCTION(function_name: string) {}
+
+/// 1.6.8 Removes interrupt
+/// @param procedure interrupt procedure to be removed
+export function remove_int(proc: () => void) {
+  _installed_timers.forEach((timer, index) => {
+    if (timer.timer === proc) {
+      log("Removing interrupt " + timer.id + "!");
+      window.clearInterval(timer.id);
+      _installed_timers.splice(index, 1);
+    }
+  });
+}
+
+/// 1.6.9
+export function install_param_int(
+  procedure: () => void,
+  param: string,
+  speed: number
+) {
+  return install_param_int_ex(procedure, param, speed);
+}
+
+/// 1.6.10
+export function install_param_int_ex(
+  procedure: () => void,
+  param: string,
+  speed: number
+) {}
+
+/// 1.6.11
+export function remove_param_int(proc: () => void, param: string) {}
+
+/// 1.6.12
+export const retrace_count: number = 0;
+
+/// 1.6.13
+export function rest(time: number) {
+  //sleep
+}
+
+/// 1.6.13
+export function rest_callback(time: number, callback: () => void) {
+  //sleep
+}
 
 /// looks up a timer by it's function on the list
 export function _timer_lookup(proc: () => void) {
@@ -40,10 +121,7 @@ export function BPM_TO_TIMER(bpm: number) {
   return (60 * 1000) / bpm;
 }
 
-/// Does nothing.
-export function install_timer() {
-  // Does nothing
-}
+/// INTERNAL
 
 /// Unix time stamp!
 /// Returns number of milliseconds since 1970 started.
@@ -51,47 +129,7 @@ export function time() {
   return Date.now();
 }
 
-/// Installs interrupt function.
-/// Installs a user timer handler, with the speed given as the number of milliseconds between ticks. This is the same thing as install_int_ex(proc, MSEC_TO_TIMER(speed)). Calling again this routine with the same timer handler as parameter allows you to adjust its speed.
-/// @param procedure function to be called
-/// @param speed execution interval in msec
-export function install_int(procedure: () => void, msec: number) {
-  return install_int_ex(procedure, MSEC_TO_TIMER(msec));
-}
-
-/// Installs interrupt function.
-/// With this one, you must use helper functions to set the interval in the second argument. The lowest interval is 1 msec, but you probably don't want to go below 17 msec. Suggested values are BPS_TO_TIMER(30) or BPS_TO_TIMER(60). It cannot be used to alter previously installed interrupt function as well.
-/// * SECS_TO_TIMER(secs) - seconds
-/// * MSEC_TO_TIMER(msec) - milliseconds (1/1000th)
-/// * BPS_TO_TIMER(bps) - beats per second
-/// * BPM_TO_TIMER(bpm) - beats per minute
-/// @param procedure function to be called
-/// @param speed execution interval
-export function install_int_ex(procedure: () => void, speed: number) {
-  const timer_id = window.setInterval(procedure, speed);
-  _installed_timers.push({ timer: procedure, id: timer_id });
-  log("Added insterrupt #" + timer_id + " at " + speed + "msec isntervals!");
-}
-
-/// Removes interrupt
-/// @param procedure interrupt procedure to be removed
-export function remove_int(procedure: () => void) {
-  _installed_timers.forEach((timer, index) => {
-    if (timer.timer === procedure) {
-      log("Removing interrupt " + timer.id + "!");
-      window.clearInterval(timer.id);
-      _installed_timers.splice(index, 1);
-    }
-  });
-}
-
-/// Removes all interrupts
-export function remove_all_ints() {
-  _installed_timers.forEach((timer) => {
-    window.clearInterval(timer.id);
-  });
-  _installed_timers = [];
-  log("Removed all interrupts!");
-}
+/// holds all currently installed timers
+let _installed_timers: TIMER[] = [];
 
 //@}
