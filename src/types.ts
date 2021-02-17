@@ -126,7 +126,7 @@ export type GFX_MODE = {
 export const PAL_SIZE = 256;
 
 /// 1.2.12
-export type PALETTE = RGB;
+export type PALETTE = RGB[];
 
 /// 1.2.13
 export type RGB = {
@@ -299,11 +299,9 @@ export type SAMPLE = {
 
 /// 1.2.30
 export type MIDI = {
-  divisions: number;
-  track: {
-    len: number;
-    data: number;
-  }[];
+  file: string;
+  ready: boolean;
+  type: "midi";
 };
 
 /// 1.2.31

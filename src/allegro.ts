@@ -9,6 +9,7 @@ export * from "./font.js";
 export * from "./graphics.js";
 export * from "./keyboard.js";
 export * from "./math.js";
+export * from "./midi.js";
 export * from "./mouse.js";
 export * from "./palette.js";
 export * from "./primitives.js";

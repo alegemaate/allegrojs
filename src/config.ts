@@ -8,7 +8,7 @@ import { log } from "./debug.js";
 import { textprintf_centre_ex } from "./font.js";
 import { font, SCREEN_H, SCREEN_W } from "./graphics.js";
 import { clear_to_color } from "./primitives.js";
-import { vsprintf } from "./sprintf.js";
+import { vsprintf } from "./libs/sprintf.js";
 import { screen } from "./bitmap.js";
 
 /// 1.1.1 Installs allegro.

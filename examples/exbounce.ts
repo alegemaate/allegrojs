@@ -21,6 +21,7 @@ import {
   KEY_ESC,
   key,
   install_keyboard,
+  DIGI_AUTODETECT,
 } from "../src/allegro.js";
 
 // bitmap oobjects
@@ -106,7 +107,7 @@ async function main() {
   // make the dimesnions 640x480
   set_gfx_mode("canvas_id", 1, 640, 480, 0, 0);
 
-  install_sound();
+  install_sound(DIGI_AUTODETECT, DIGI_AUTODETECT, null);
 
   install_keyboard();
 

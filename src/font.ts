@@ -4,7 +4,7 @@
 
 import { rectfill, _fillstyle } from "./primitives.js";
 import { BITMAP, FONT, RGB } from "./types.js";
-import { vsprintf } from "./sprintf.js";
+import { vsprintf } from "./libs/sprintf.js";
 import { create_bitmap } from "./bitmap.js";
 
 const _text_len_canvas = create_bitmap(0, 0);

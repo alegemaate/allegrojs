@@ -31,6 +31,8 @@ import {
   GFX_AUTODETECT,
   rest,
   KEY_ESC,
+  DIGI_AUTODETECT,
+  MIDI_AUTODETECT,
 } from "../src/allegro.js";
 
 //bitmap objects
@@ -108,7 +110,7 @@ async function main() {
   set_gfx_mode("canvas_id", GFX_AUTODETECT, 640, 480, 0, 0);
   install_mouse();
   install_keyboard();
-  install_sound();
+  install_sound(DIGI_AUTODETECT, MIDI_AUTODETECT, null);
 
   man = load_bmp("data/man.png");
   apple = load_bmp("data/apple.png");

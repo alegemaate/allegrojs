@@ -29,6 +29,7 @@ import {
   enable_debug,
   readkey,
   set_palette,
+  RGB,
 } from "../src/allegro.js";
 
 enable_debug("debug");
@@ -36,7 +37,7 @@ enable_debug("debug");
 async function main() {
   let argv = ["", "data/man.png"];
   let the_image!: BITMAP;
-  let the_palette!: PALETTE;
+  let the_palette!: RGB;
 
   if (allegro_init() != 0) return 1;
 

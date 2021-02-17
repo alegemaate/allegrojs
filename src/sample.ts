@@ -13,9 +13,23 @@ const _samples: SAMPLE[] = [];
 
 /// Install sound
 /// @todo: stuff here? AudioContext? compatibility first!
-export function install_sound() {
-  // Does nothing atm
+export function install_sound(
+  digi: number,
+  midi: number,
+  cfg_path?: string | null
+) {
+  void digi;
+  void midi;
+  void cfg_path;
+  return 0;
 }
+
+export const DIGI_AUTODETECT = -1;
+export const DIGI_NONE = 0;
+
+export const MIDI_AUTODETECT = -1;
+export const MIDI_NONE = 0;
+export const MIDI_DIGMID = 1;
 
 /// Sets global volume
 export function set_volume(volume: number) {

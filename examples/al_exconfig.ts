@@ -46,6 +46,7 @@ import {
   ready,
   readkey,
   textout_ex,
+  PALETTE,
 } from "../src/allegro.js";
 
 async function main() {
@@ -68,7 +69,6 @@ async function main() {
     g: 0,
     b: 0,
   };
-
   let x: number;
   let y: number;
 

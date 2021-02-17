@@ -9,12 +9,12 @@ import { _mouse_loop, _mouse_loop_reset } from "./mouse.js";
 import { clear_bitmap, rectfill } from "./primitives.js";
 import { _touch_loop } from "./touch.js";
 import { makecol } from "./color.js";
-import { BITMAP, CONFIG, SAMPLE } from "./types.js";
+import { BITMAP, CONFIG, SAMPLE, MIDI } from "./types.js";
 import { screen } from "./bitmap.js";
 import { rest } from "./timer.js";
 
 /// All downloadable objects
-export const _downloadables: (BITMAP | CONFIG | SAMPLE)[] = [];
+export const _downloadables: (BITMAP | CONFIG | MIDI | SAMPLE)[] = [];
 
 /// Performs some loop tasks, such as cleaning up pressed[] and released[]
 export function _uberloop() {

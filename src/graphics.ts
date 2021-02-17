@@ -129,7 +129,14 @@ export const GFX_SAFE = 3;
 /// 1.9.8
 export function set_display_switch_mode(mode: number) {
   void mode;
+  return 0;
 }
+
+export const SWITCH_NONE = 0;
+export const SWITCH_PAUSE = 1;
+export const SWITCH_AMNESIA = 2;
+export const SWITCH_BACKGROUND = 3;
+export const SWITCH_BACKAMNESIA = 4;
 
 /// 1.9.9
 export function set_display_switch_callback(dir: number, cb: () => void) {
