@@ -7,7 +7,7 @@ import { BITMAP, FONT, RGB } from "./types.js";
 import { vsprintf } from "./libs/sprintf.js";
 import { create_bitmap } from "./bitmap.js";
 
-const _text_len_canvas = create_bitmap(0, 0);
+let _text_len_canvas: BITMAP | null = null;
 
 let _num_fonts = 0;
 
@@ -108,6 +108,9 @@ export const allegro_404_char = "^";
 
 /// 1.19.3
 export function text_length(f: FONT, str: string) {
+  if (!_text_len_canvas) {
+    _text_len_canvas = create_bitmap(0, 0);
+  }
   _text_len_canvas.context.font = f.size + "px " + f.name;
   const metrics = _text_len_canvas.context.measureText(str);
   return metrics.width;

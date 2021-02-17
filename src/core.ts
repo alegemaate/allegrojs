@@ -91,7 +91,7 @@ export function loading_bar(progress: number) {
 /// You should always wrap your loop() function around it, unless there is nothing external you need. load_bitmap() and load_sample() all require some time to process and the execution cannot be stalled for that, so all code you wrap in this hander will only get executed after everything has loaded making sure you can access bitmap properties and data and play samples right away.  Note that load_font() does not affect ready(), so you should always load your fonts first.
 /// @param procedure function to be called when everything has loaded.
 /// @param bar loading bar callback function, if omitted, equals to loading_bar() and renders a simple loading bar. it must accept one parameter, that is loading progress in 0.0-1.0 range.
-export async function ready(bar?: () => void) {
+export async function allegro_ready(bar?: () => void) {
   _loader_init_time = Date.now();
   log("Loader initialised!");
   if (bar) _bar_proc = bar;

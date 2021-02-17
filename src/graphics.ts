@@ -11,11 +11,11 @@ import { screen } from "./bitmap.js";
 
 export const gfx_driver = {
   id: 0,
-  name: "Browser Graphics",
-  desc: "Browser Graphics",
-  ascii_name: "Browser Graphics",
-  w: window.outerWidth,
-  h: window.outerHeight,
+  name: "No Graphics",
+  desc: "No Graphics",
+  ascii_name: "No Graphics",
+  w: 0,
+  h: 0,
   linear: false,
   bank_size: 0,
   vid_mem: 0,
@@ -107,12 +107,20 @@ export function set_gfx_mode(
   SCREEN_W = w;
   SCREEN_H = h;
 
+  // Setup canvas
   screen.w = w;
   screen.h = h;
   screen.canvas = cv;
   screen.context = ctx;
   screen.ready = true;
   clear_to_color(screen, makecol(0, 0, 0));
+
+  // Setup gfx driver
+  gfx_driver.name = "Browser Graphics";
+  gfx_driver.desc = "Browser Graphics";
+  gfx_driver.ascii_name = "Browser Graphics";
+  gfx_driver.w = window.outerWidth;
+  gfx_driver.h = window.outerHeight;
 
   font = { element: null, file: "", name: "Monospace", size: 12, type: "fnt" };
   _gfx_installed = true;

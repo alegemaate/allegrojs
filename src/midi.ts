@@ -1,20 +1,9 @@
 import { MIDI } from "./types.js";
-import "./libs/midi.js";
-
-declare global {
-  interface Window {
-    MIDIjs: {
-      play: (url: string) => void;
-      stop: () => void;
-      pause: () => void;
-      resume: () => void;
-      get_duration: (url: string, callback: (seconds: number) => void) => void;
-    };
-  }
-}
 
 let _current_midi: MIDI | null = null;
 const _midis: MIDI[] = [];
+
+// const player = new LibTimidity();
 
 export const midi_driver = {
   id: 0,
@@ -46,12 +35,14 @@ export function lock_midi(midi: MIDI) {
 
 /// 1.28.4
 export function play_midi(midi: MIDI | null, loop: boolean) {
+  void loop;
   if (_current_midi) {
-    window.MIDIjs.pause();
+    // player.pause();
   }
 
   if (midi) {
-    window.MIDIjs.play(midi.file);
+    // player.load(midi.file);
+    // player.play();
     _current_midi = midi;
   }
 }
@@ -76,27 +67,30 @@ export function stop_midi() {
 /// 1.28.7
 export function midi_pause() {
   if (_current_midi) {
-    window.MIDIjs.pause();
+    // player.pause();
   }
 }
 
 /// 1.28.8
 export function midi_resume() {
   if (_current_midi) {
-    void window.MIDIjs.resume();
+    // player.play();
   }
 }
 
 /// 1.28.9
 export function midi_seek(target: number) {
   if (_current_midi) {
-    //window.MIDIjs.seek(target / 1000);
+    // player.seek(target / 1000);
+    void target;
   }
 }
 
 /// 1.28.10
 export function get_midi_length(midi: MIDI) {
-  return -1; //window.MIDIjs.get_duration(midi.file, (dur) => console.log(dur));
+  void midi;
+  // player.duration;
+  return 0;
 }
 
 /// 1.28.11

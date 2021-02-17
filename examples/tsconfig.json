@@ -1,18 +1,18 @@
 {
   "compilerOptions": {
-    "target": "es2015",
-    "module": "es2015",
+    "target": "es3",
+    "module": "es6",
+    "moduleResolution": "node",
     "strict": true,
-    // "noUnusedLocals": true,
-    // "noUnusedParameters": true,
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
     "downlevelIteration": true,
     "esModuleInterop": true,
     "lib": ["ESNext", "DOM"],
-    "outDir": "build",
+    "outDir": "./build",
+    "allowJs": true,
     "incremental": true
   },
-  "include": ["./*.ts"]
+  "include": ["./*.ts", "../src"]
 }

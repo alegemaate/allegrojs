@@ -13,7 +13,6 @@ extern "C" {
 /* CONFIGURATION ROUTINES */
 extern void install_allegro(void);
 extern void allegro_init(void);
-extern void allegro_init_all(const char *canvas_id, int w, int h, int menu, const int *enable_keys, int enable_keys_len);
 #define END_OF_MAIN()
 
 /* MOUSE ROUTINES */
@@ -55,7 +54,7 @@ extern void install_int(procedure p, long msec);
 extern void install_int_ex(procedure p, long speed);
 extern void loop(procedure p, long speed);
 extern void loading_bar(float progress);
-extern void ready(procedure p, bar b);
+extern void allegro_ready(procedure p, bar b);
 extern void remove_int(procedure p);
 extern void remove_all_ints(void);
 
@@ -93,13 +92,12 @@ typedef struct {
 extern BITMAP* create_bitmap(int width, int height);
 extern BITMAP* load_bitmap(const char *filename);
 extern BITMAP* load_bmp(const char *filename);
-extern BITMAP** load_sheet(const char *filename, int w, int h, int *len);
 
 /* GRAPHICS MODES */
-extern BITMAP* canvas(void);
+extern BITMAP* screen(void);
 extern int SCREEN_W(void);
 extern int SCREEN_H(void);
-extern int set_gfx_mode(const char *canvas_id, int width, int height, int smooth);
+extern int set_gfx_mode(const char *canvas_id, int card, int w, int h, int v_w, int v_h);
 
 /* DRAWING PRIMITIVES */
 #define   PI = 3.14159265

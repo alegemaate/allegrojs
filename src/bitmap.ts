@@ -7,16 +7,13 @@ import { log } from "./debug.js";
 import { BITMAP, PACKFILE, RGB } from "./types.js";
 
 /// 1.10.1
-/// Internal
-const tmpCanvas = document.createElement("canvas");
-
 /// Screen bitmap
 /// This is the bitmap object representing the main drawing canvas. Drawing anything on the screen bitmap displays it.
 export const screen: BITMAP = {
   w: 0,
   h: 0,
-  canvas: tmpCanvas,
-  context: (tmpCanvas.getContext("2d") as unknown) as CanvasRenderingContext2D,
+  canvas: (null as unknown) as HTMLCanvasElement,
+  context: (null as unknown) as CanvasRenderingContext2D,
   ready: false,
   type: "bmp",
 };

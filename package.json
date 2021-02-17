@@ -25,5 +25,7 @@
     "webpack": "^5.21.2",
     "webpack-cli": "^4.5.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "timidity": "^1.3.0"
+  }
 }
