@@ -11,10 +11,17 @@ export class FileParser {
   /**
    * Constructor
    *
-   * @param dataView - Data to use for parsing
+   * @param arrayBuffer - Data to use for parsing
    */
-  public constructor(dataView: DataView) {
-    this.data = dataView;
+  public constructor(buffer: ArrayBuffer) {
+    const uint8Data = new Uint8Array(buffer);
+
+    this.data = new DataView(
+      uint8Data.buffer,
+      uint8Data.byteOffset,
+      uint8Data.byteLength
+    );
+
     this.pointer = 0;
   }
 

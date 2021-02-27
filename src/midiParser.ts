@@ -10,7 +10,6 @@ import { log } from "./debug";
 import { FileParser } from "./FileParser";
 
 /* eslint-disable complexity */
-
 interface MidiTrackEvent {
   time: number;
   type: number;
@@ -96,13 +95,8 @@ export interface MidiData {
  * @param buffer - Array buffer from midi file
  */
 export const parseMidi = (buffer: ArrayBuffer): MidiData | null => {
-  // Convert to Uint8Array
-  const uint8Data = new Uint8Array(buffer);
-
-  // 8 bits bytes file data array
-  const file = new FileParser(
-    new DataView(uint8Data.buffer, uint8Data.byteOffset, uint8Data.byteLength)
-  );
+  // Create parser instance
+  const file = new FileParser(buffer);
 
   // Check header
   const headerValidation = file.readInt(4);
