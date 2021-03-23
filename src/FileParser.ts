@@ -3,10 +3,13 @@
  */
 export class FileParser {
   // Data for parsing
-  private readonly data: DataView;
+  protected readonly data: DataView;
 
   // File pointer
-  private pointer: number;
+  protected pointer: number;
+
+  // Pointer stack
+  private readonly pointerStack: number[];
 
   /**
    * Constructor
@@ -23,6 +26,26 @@ export class FileParser {
     );
 
     this.pointer = 0;
+
+    this.pointerStack = [];
+  }
+
+  /**
+   * Push pointer onto stack
+   */
+  public pushPointer(): void {
+    this.pointerStack.push(this.pointer);
+  }
+
+  /**
+   * Pop pointer from stack
+   */
+  public popPointer(): void {
+    const popped = this.pointerStack.pop();
+    if (typeof popped === "undefined") {
+      throw new Error("Can not pop file pointer, no pointer on stack");
+    }
+    this.pointer = popped;
   }
 
   /**
@@ -41,25 +64,48 @@ export class FileParser {
    *
    * @param bytes - Number of bytes to read
    */
-  public readInt(bytes: number): number {
-    // Get integer from next bytes group (big-endian)
-    const clamp_bytes = Math.min(bytes, this.data.byteLength - this.pointer);
+  public readInt(bytes: number, bigEndian = true): number {
+    // Get integer from next bytes group
+    const clampBytes = Math.min(bytes, this.data.byteLength - this.pointer);
 
     // EOF
-    if (clamp_bytes < 1) {
+    if (clampBytes < 1) {
       return -1;
     }
-    let value = 0;
-    if (clamp_bytes > 1) {
-      for (let i = 1; i <= clamp_bytes - 1; i += 1) {
-        value += this.data.getUint8(this.pointer) * 256 ** (clamp_bytes - i);
-        this.pointer += 1;
-      }
-    }
-    value += this.data.getUint8(this.pointer);
 
-    this.pointer += 1;
+    // Endian-ness does not matter
+    if (clampBytes === 1) {
+      const value = this.data.getUint8(this.pointer);
+      this.pointer += 1;
+      return value;
+    }
+
+    let value = 0;
+    for (let i = 0; i < clampBytes; i += 1) {
+      if (bigEndian) {
+        value += this.data.getUint8(this.pointer) << (8 * (clampBytes - i - 1));
+      } else {
+        value += this.data.getUint8(this.pointer) << (8 * i);
+      }
+      this.pointer += 1;
+    }
+
     return value;
+  }
+
+  /**
+   * Read an array of bytes from buffer
+   *
+   * @param length - Number of bytes to read
+   */
+  public readArray(length: number): Uint8Array {
+    // Read uint8 array
+    const arr = new Uint8Array(length);
+    for (let i = 0; i < length; i += 1) {
+      arr[i] = this.readInt(1);
+    }
+
+    return arr;
   }
 
   /**
@@ -105,5 +151,14 @@ export class FileParser {
       value += lastByte;
     }
     return value;
+  }
+
+  /**
+   * Get total length of file
+   *
+   * @returns number of bytes long
+   */
+  public getLength(): number {
+    return this.data.byteLength;
   }
 }
